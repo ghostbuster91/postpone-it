@@ -2,8 +2,10 @@ package io.github.ghostbuster91.postponeit
 
 import android.Manifest
 import android.os.Bundle
-import android.telephony.SmsManager
 import android.widget.Toast
+import com.firebase.jobdispatcher.FirebaseJobDispatcher
+import com.firebase.jobdispatcher.GooglePlayDriver
+import com.firebase.jobdispatcher.Trigger
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
@@ -22,11 +24,22 @@ class MainActivity : RxAppCompatActivity() {
                 .flatMap { requestSmsPermission }
                 .subscribe { granted ->
                     if (granted) {
-                        val smsManager = SmsManager.getDefault()
-                        smsManager.sendTextMessage("23123123", null, "hello", null, null)
+                        onSmsClick()
                     } else {
                         Toast.makeText(this@MainActivity, "not granted", Toast.LENGTH_LONG).show()
                     }
                 }
+    }
+
+    private fun onSmsClick() {
+        val dispatcher = FirebaseJobDispatcher(GooglePlayDriver(this))
+
+        val myJob = dispatcher.newJobBuilder()
+                .setService(FirebaseJobService::class.java)
+                .setTrigger(Trigger.executionWindow(0, 10))
+                .setTag("my-unique-tag2")
+                .setRecurring(false)
+                .build()
+        dispatcher.mustSchedule(myJob)
     }
 }
