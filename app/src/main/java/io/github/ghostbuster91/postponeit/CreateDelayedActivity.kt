@@ -7,14 +7,14 @@ import android.os.Bundle
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbruyelle.rxpermissions2.RxPermissions
-import com.trello.rxlifecycle2.components.RxActivity
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import kotlinx.android.synthetic.main.create_delayed_layout.*
 import java.util.*
 
-class CreateDelayedActivity : RxActivity() {
+class CreateDelayedActivity : RxAppCompatActivity() {
 
     private val jobService = jobServiceProvider
 
