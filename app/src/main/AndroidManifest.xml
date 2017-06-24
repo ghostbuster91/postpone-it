@@ -3,6 +3,7 @@
     package="io.github.ghostbuster91.postponeit">
 
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -19,13 +20,18 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".CreateDelayedActivity" />
+
         <service
-            android:exported="false"
-            android:name=".FirebaseJobService">
+            android:name=".FirebaseJobService"
+            android:label="Word service"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver android:name=".MyStartServiceReceiver">
             <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </service>
+        </receiver>
     </application>
 
 </manifest>

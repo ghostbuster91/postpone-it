@@ -2,10 +2,10 @@ package io.github.ghostbuster91.postponeit
 
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.job.JobParameters
+import android.app.job.JobService
 import android.content.Context
 import android.telephony.SmsManager
-import com.firebase.jobdispatcher.JobParameters
-import com.firebase.jobdispatcher.JobService
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 
@@ -24,7 +24,7 @@ class FirebaseJobService : JobService() {
 
     private fun sendSms() {
         val smsManager = SmsManager.getDefault()
-        smsManager.sendTextMessage("23123123", null, "hello1", null, null)
+        smsManager.sendTextMessage("23123123", null, "hello12", null, null)
     }
 
     private fun showNotification() {
