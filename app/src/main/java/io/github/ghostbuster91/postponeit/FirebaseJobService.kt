@@ -10,13 +10,18 @@ import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 
 class FirebaseJobService : JobService() {
+
+    private val jobRepository = jobRepositoryProvider
+
     override fun onStartJob(job: JobParameters): Boolean {
         Completable.fromCallable { sendSms() }
                 .subscribeOn(Schedulers.computation())
                 .doOnComplete { showNotification() }
                 .subscribe({
+                    jobRepository.updateJob(job.jobId, JobStatus.SUCCESS)
                     jobFinished(job, false)
                 }, {
+                    jobRepository.updateJob(job.jobId, JobStatus.SUCCESS)
                     jobFinished(job, false)
                 })
         return true

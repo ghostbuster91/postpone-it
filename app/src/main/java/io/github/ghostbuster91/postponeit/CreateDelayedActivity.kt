@@ -1,9 +1,6 @@
 package io.github.ghostbuster91.postponeit
 
 import android.Manifest
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +12,8 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import kotlinx.android.synthetic.main.create_delayed_layout.*
 
 class CreateDelayedActivity : RxActivity() {
+
+    private val jobService = jobServiceProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,12 +32,7 @@ class CreateDelayedActivity : RxActivity() {
     }
 
     private fun onSmsClick() {
-        val serviceComponent = ComponentName(this, FirebaseJobService::class.java)
-        val builder = JobInfo.Builder(0, serviceComponent)
-                .setMinimumLatency((1 * 1000).toLong()) // wait at least
-                .setOverrideDeadline((5 * 1000).toLong()) // maximum delay
-        val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        jobScheduler.schedule(builder.build())
+        jobService.createJob()
     }
 
     companion object {
