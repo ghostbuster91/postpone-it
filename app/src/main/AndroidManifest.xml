@@ -23,10 +23,6 @@
 
         <activity android:name=".CreateDelayedActivity" />
 
-        <service
-            android:name=".FirebaseJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <receiver android:name=".MyStartServiceReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
