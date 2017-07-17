@@ -9,7 +9,6 @@ import kotlinx.android.synthetic.main.job_layout.view.*
 
 class JobListActivity : RxAppCompatActivity() {
 
-    private val jobRepository = jobRepositoryProvider
     private val jobService = jobServiceProvider
     private val items = mutableListOf<DelayedJob>()
 
@@ -18,11 +17,13 @@ class JobListActivity : RxAppCompatActivity() {
         setContentView(R.layout.activity_main)
         jobList.layoutManager = LinearLayoutManager(this)
         jobList.adapter = basicAdapterWithLayoutAndBinder(items, R.layout.job_layout) { holder, item ->
-            holder.itemView.jobName.text = item.id.toString()
-            holder.itemView.targetSmsNumber.text = item.number
-            holder.itemView.jobDate.text = item.timeInMillis.toString()
-            holder.itemView.deleteJobButton.setOnClickListener {
-                onJobDelete(item)
+            with(holder.itemView) {
+                jobName.text = item.id.toString()
+                targetSmsNumber.text = item.number
+                jobDate.text = item.timeInMillis.toString()
+                deleteJobButton.setOnClickListener {
+                    onJobDelete(item)
+                }
             }
         }
         createDelayedSmsButton.setOnClickListener {
@@ -33,7 +34,7 @@ class JobListActivity : RxAppCompatActivity() {
     override fun onResume() {
         super.onResume()
         items.clear()
-        items.addAll(jobRepository.getJobs())
+        items.addAll(jobService.getJobs())
         jobList.adapter.notifyDataSetChanged()
     }
 
