@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
-import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.R
+import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.job.create.CreateDelayedActivity
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import kotlinx.android.synthetic.main.activity_main.*
@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.job_layout.view.*
 class JobListActivity : RxAppCompatActivity() {
 
     private val jobService = jobServiceProvider
-    private val items = mutableListOf<DelayedJob>()
+    private var items = emptyList<DelayedJob>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +37,13 @@ class JobListActivity : RxAppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        items.clear()
-        items.addAll(jobService.getJobs())
+        items = jobService.getJobs()
         jobList.adapter.notifyDataSetChanged()
     }
 
     private fun onJobCancel(item: DelayedJob) {
         jobService.cancelJob(item)
+        items = jobService.getJobs()
         jobList.adapter.notifyDataSetChanged()
     }
 }
