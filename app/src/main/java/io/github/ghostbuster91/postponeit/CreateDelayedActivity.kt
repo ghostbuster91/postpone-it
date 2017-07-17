@@ -65,7 +65,16 @@ class CreateDelayedActivity : RxAppCompatActivity() {
     }
 
     private fun onSmsClick() {
-        jobService.createJob()
+        val time = timeInput.text.split(":")
+        val date = dateInput.text.split("/")
+        val timeInMillis = Calendar.getInstance().apply {
+            set(Calendar.HOUR, time.first().toInt())
+            set(Calendar.MINUTE, time.last().toInt())
+            set(Calendar.DAY_OF_MONTH, date.first().toInt())
+            set(Calendar.MONTH, date[1].toInt())
+            set(Calendar.YEAR, date[2].toInt())
+        }.timeInMillis
+        jobService.createJob(timeInMillis)
     }
 
     companion object {
