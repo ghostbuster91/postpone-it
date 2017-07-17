@@ -25,8 +25,8 @@ class JobListActivity : RxAppCompatActivity() {
                 jobName.text = item.id.toString()
                 targetSmsNumber.text = item.number
                 jobDate.text = item.timeInMillis.toString()
-                deleteJobButton.setOnClickListener {
-                    onJobDelete(item)
+                cancelJobButton.setOnClickListener {
+                    onJobCancel(item)
                 }
             }
         }
@@ -42,9 +42,8 @@ class JobListActivity : RxAppCompatActivity() {
         jobList.adapter.notifyDataSetChanged()
     }
 
-    private fun onJobDelete(item: DelayedJob) {
-        jobService.deleteJob(item.id)
-        items.remove(item)
+    private fun onJobCancel(item: DelayedJob) {
+        jobService.cancelJob(item)
         jobList.adapter.notifyDataSetChanged()
     }
 }

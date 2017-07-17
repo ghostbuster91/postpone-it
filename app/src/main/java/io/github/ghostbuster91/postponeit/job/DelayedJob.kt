@@ -8,5 +8,6 @@ data class DelayedJob(val id: Int,
 
 enum class DelayedJobStatus {
     PENDING,
-    EXECUTED
+    EXECUTED,
+    CANCELED
 }

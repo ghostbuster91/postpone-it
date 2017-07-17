@@ -6,7 +6,7 @@ import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
 
 interface JobService {
     fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String)
-    fun deleteJob(delayedJobId: Int)
+    fun cancelJob(delayedJob: DelayedJob)
     fun findJob(delayedJobId: Int): DelayedJob
     fun updateJob(delayedJob: DelayedJob)
     fun getJobs(): List<DelayedJob>
@@ -25,11 +25,11 @@ private class JobServiceImpl(
         jobRepository.addJob(delayedJob)
     }
 
-    override fun deleteJob(delayedJobId: Int) {
-        val sender = createAlarmIntent(delayedJobId)
+    override fun cancelJob(delayedJob: DelayedJob) {
+        val sender = createAlarmIntent(delayedJob.id)
         val alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
         alarmManager.cancel(sender)
-        jobRepository.removeJob(delayedJobId)
+        jobRepository.updateJob(delayedJob.copy(status = DelayedJobStatus.CANCELED))
     }
 
     override fun findJob(delayedJobId: Int): DelayedJob = jobRepository.getJobs().first { it.id == delayedJobId }
