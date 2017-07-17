@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.AlarmManager.RTC_WAKEUP
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import java.util.*
 
 
@@ -16,16 +15,21 @@ class JobService(private val context: Context,
     fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
         val id = Math.abs(Random().nextInt())
         val delayedJob = DelayedJob(id = id, text = smsText, number = smsTextNumber, timeInMillis = timeInMillis)
-        alarmManager.setExact(RTC_WAKEUP, timeInMillis, PendingIntent.getBroadcast(context, delayedJob.id, SendSmsBroadcastReceiver.intent(context, delayedJob), 0))
+        val pendingIntent = createAlarmIntent(delayedJob)
+        alarmManager.setExact(RTC_WAKEUP, timeInMillis, pendingIntent)
         jobRepository.addJob(delayedJob)
     }
 
     fun deleteJob(delayedJobId: Int) {
-        jobRepository.removeJob(delayedJobId)
-        val intent = Intent(context, SendSmsBroadcastReceiver::class.java)
-        val sender = PendingIntent.getBroadcast(context, delayedJobId, intent, 0)
+        val sender = createAlarmIntent(jobRepository.getJobs().first { it.id == delayedJobId })
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(sender)
+        jobRepository.removeJob(delayedJobId)
+    }
+
+    private fun createAlarmIntent(delayedJob: DelayedJob): PendingIntent? {
+        val intent = SendSmsBroadcastReceiver.intent(context, delayedJob)
+        return PendingIntent.getBroadcast(context, 0, intent, 0)
     }
 }
 

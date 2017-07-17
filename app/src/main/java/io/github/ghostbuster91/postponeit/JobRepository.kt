@@ -4,7 +4,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import com.elpassion.android.commons.sharedpreferences.CachingSharedPreferenceRepository
 import com.elpassion.android.commons.sharedpreferences.createSharedPrefs
-import com.google.gson.Gson
+import com.elpassion.sharedpreferences.gsonadapter.gsonConverterAdapter
 import java.io.Serializable
 
 val jobRepositoryProvider by lazy { JobRepositoryImpl(contextProvider()) }
@@ -21,7 +21,7 @@ interface JobRepository {
 }
 
 class JobRepositoryImpl(private val context: Context) : JobRepository {
-    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, { Gson() }))
+    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, gsonConverterAdapter()))
 
     override fun updateJob(delayedJob: DelayedJob) {
         val newJobList = getJobs().filter { it.id != delayedJob.id } + delayedJob
