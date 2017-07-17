@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 import com.elpassion.android.commons.sharedpreferences.CachingSharedPreferenceRepository
 import com.elpassion.android.commons.sharedpreferences.createSharedPrefs
 import com.google.gson.Gson
+import java.io.Serializable
 
 val jobRepositoryProvider by lazy { JobRepositoryImpl(contextProvider()) }
 
@@ -47,4 +48,4 @@ class JobRepositoryImpl(private val context: Context) : JobRepository {
 data class DelayedJob(val id: String,
                       val text: String,
                       val number: String,
-                      val timeInMillis: Long)
+                      val timeInMillis: Long) : Serializable
