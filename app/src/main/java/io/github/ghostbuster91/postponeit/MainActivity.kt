@@ -19,8 +19,9 @@ class MainActivity : RxAppCompatActivity() {
         setContentView(R.layout.activity_main)
         jobList.layoutManager = LinearLayoutManager(this)
         jobList.adapter = basicAdapterWithLayoutAndBinder(items, R.layout.job_layout) { holder, item ->
-            holder.itemView.jobName.text = item.id.toString()
-            holder.itemView.jobStatus.text = item.status.toString()
+            holder.itemView.jobName.text = item.id
+            holder.itemView.targetSmsNumber.text = item.number
+            holder.itemView.jobDate.text = item.timeInMillis.toString()
         }
         createDelayedSmsButton.setOnClickListener {
             CreateDelayedActivity.start(this@MainActivity)

@@ -74,7 +74,7 @@ class CreateDelayedActivity : RxAppCompatActivity() {
             set(Calendar.MONTH, date[1].toInt())
             set(Calendar.YEAR, date[2].toInt())
         }.timeInMillis
-        jobService.createJob(timeInMillis)
+        jobService.createJob(timeInMillis, smsTextInput.text.toString(), smsNumberInput.text.toString())
     }
 
     companion object {

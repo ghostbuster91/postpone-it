@@ -16,14 +16,14 @@ interface JobRepository {
 
     fun addJob(delayedJob: DelayedJob)
 
-    fun updateJob(jobId: Int, status: JobStatus)
+    fun updateJob(delayedJob: DelayedJob)
 }
 
 class JobRepositoryImpl(private val context: Context) : JobRepository {
     private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, { Gson() }))
 
-    override fun updateJob(jobId: Int, status: JobStatus) {
-        val newJobList = getJobs().filter { it.id != jobId } + DelayedJob(jobId, status)
+    override fun updateJob(delayedJob: DelayedJob) {
+        val newJobList = getJobs().filter { it.id != delayedJob.id } + delayedJob
         sharedPrefs.write(KEY, newJobList)
     }
 
@@ -44,10 +44,7 @@ class JobRepositoryImpl(private val context: Context) : JobRepository {
     }
 }
 
-data class DelayedJob(val id: Int, val status: JobStatus)
-
-enum class JobStatus {
-    PENDING,
-    SUCCESS,
-    FAILURE
-}
+data class DelayedJob(val id: String,
+                      val text: String,
+                      val number: String,
+                      val timeInMillis: Long)
