@@ -14,20 +14,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".JobListActivity">
+        <activity android:name=".job.list.JobListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".CreateDelayedActivity" />
+        <activity android:name=".job.create.CreateDelayedActivity" />
 
         <receiver android:name=".MyStartServiceReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".SendSmsBroadcastReceiver" />
+        <receiver android:name=".job.execute.SendSmsJobExecutor" />
     </application>
 </manifest>

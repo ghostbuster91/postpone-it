@@ -1,10 +1,11 @@
-package io.github.ghostbuster91.postponeit
+package io.github.ghostbuster91.postponeit.job
 
 import android.content.Context
 import android.preference.PreferenceManager
 import com.elpassion.android.commons.sharedpreferences.CachingSharedPreferenceRepository
 import com.elpassion.android.commons.sharedpreferences.createSharedPrefs
 import com.elpassion.sharedpreferences.gsonadapter.gsonConverterAdapter
+import io.github.ghostbuster91.postponeit.contextProvider
 
 val jobRepositoryProvider: JobRepository by lazy { JobRepositoryImpl(contextProvider()) }
 

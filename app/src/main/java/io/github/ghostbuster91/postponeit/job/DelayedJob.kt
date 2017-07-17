@@ -1,4 +1,4 @@
-package io.github.ghostbuster91.postponeit
+package io.github.ghostbuster91.postponeit.job
 
 data class DelayedJob(val id: Int,
                       val text: String,

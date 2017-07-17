@@ -1,10 +1,7 @@
-package io.github.ghostbuster91.postponeit
+package io.github.ghostbuster91.postponeit.job
 
-import android.app.AlarmManager
 import android.app.AlarmManager.RTC_WAKEUP
-import android.app.PendingIntent
-import android.content.Context
-import java.util.*
+import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
 
 
 interface JobService {
@@ -16,12 +13,12 @@ interface JobService {
 }
 
 private class JobServiceImpl(
-        private val context: Context,
-        private val jobRepository: JobRepository) : JobService {
-    private val alarmManager by lazy { context.getSystemService(Context.ALARM_SERVICE) as AlarmManager }
+        private val context: android.content.Context,
+        private val jobRepository: JobRepository) : io.github.ghostbuster91.postponeit.job.JobService {
+    private val alarmManager by lazy { context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager }
 
     override fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
-        val id = Math.abs(Random().nextInt())
+        val id = Math.abs(java.util.Random().nextInt())
         val delayedJob = DelayedJob(id = id, text = smsText, number = smsTextNumber, timeInMillis = timeInMillis)
         val pendingIntent = createAlarmIntent(delayedJob.id)
         alarmManager.setExact(RTC_WAKEUP, timeInMillis, pendingIntent)
@@ -30,7 +27,7 @@ private class JobServiceImpl(
 
     override fun deleteJob(delayedJobId: Int) {
         val sender = createAlarmIntent(delayedJobId)
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager
         alarmManager.cancel(sender)
         jobRepository.removeJob(delayedJobId)
     }
@@ -43,10 +40,10 @@ private class JobServiceImpl(
 
     override fun getJobs() = jobRepository.getJobs()
 
-    private fun createAlarmIntent(delayedJobId: Int): PendingIntent? {
-        val intent = SendSmsBroadcastReceiver.intent(context, delayedJobId)
-        return PendingIntent.getBroadcast(context, 0, intent, 0)
+    private fun createAlarmIntent(delayedJobId: Int): android.app.PendingIntent? {
+        val intent = SendSmsJobExecutor.Companion.intent(context, delayedJobId)
+        return android.app.PendingIntent.getBroadcast(context, 0, intent, 0)
     }
 }
 
-val jobServiceProvider: JobService by lazy { JobServiceImpl(contextProvider(), jobRepositoryProvider) }
+val jobServiceProvider: io.github.ghostbuster91.postponeit.job.JobService by lazy { io.github.ghostbuster91.postponeit.job.JobServiceImpl(io.github.ghostbuster91.postponeit.contextProvider(), jobRepositoryProvider) }

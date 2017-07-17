@@ -1,9 +1,13 @@
-package io.github.ghostbuster91.postponeit
+package io.github.ghostbuster91.postponeit.job.list
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import io.github.ghostbuster91.postponeit.job.DelayedJob
+import io.github.ghostbuster91.postponeit.R
+import io.github.ghostbuster91.postponeit.job.create.CreateDelayedActivity
+import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.job_layout.view.*
 
