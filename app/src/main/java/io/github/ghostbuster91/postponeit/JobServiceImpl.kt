@@ -7,12 +7,17 @@ import android.content.Context
 import java.util.*
 
 
-class JobService(private val context: Context,
-                 private val jobRepository: JobRepository) {
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+interface JobService {
+    fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String)
+    fun deleteJob(delayedJobId: Int)
+}
 
+class JobServiceImpl(
+        private val context: Context,
+        private val jobRepository: JobRepository) : JobService {
+    private val alarmManager by lazy { context.getSystemService(Context.ALARM_SERVICE) as AlarmManager }
 
-    fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
+    override fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
         val id = Math.abs(Random().nextInt())
         val delayedJob = DelayedJob(id = id, text = smsText, number = smsTextNumber, timeInMillis = timeInMillis)
         val pendingIntent = createAlarmIntent(delayedJob)
@@ -20,7 +25,7 @@ class JobService(private val context: Context,
         jobRepository.addJob(delayedJob)
     }
 
-    fun deleteJob(delayedJobId: Int) {
+    override fun deleteJob(delayedJobId: Int) {
         val sender = createAlarmIntent(jobRepository.getJobs().first { it.id == delayedJobId })
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(sender)
@@ -33,4 +38,4 @@ class JobService(private val context: Context,
     }
 }
 
-val jobServiceProvider by lazy { JobService(contextProvider(), jobRepositoryProvider) }
+val jobServiceProvider: JobService by lazy { JobServiceImpl(contextProvider(), jobRepositoryProvider) }
