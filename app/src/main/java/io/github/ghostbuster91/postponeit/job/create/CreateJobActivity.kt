@@ -16,7 +16,7 @@ import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import kotlinx.android.synthetic.main.create_delayed_layout.*
 import java.util.*
 
-class CreateDelayedActivity : RxAppCompatActivity() {
+class CreateJobActivity : RxAppCompatActivity() {
 
     private val jobService = jobServiceProvider
 
@@ -31,7 +31,7 @@ class CreateDelayedActivity : RxAppCompatActivity() {
                     if (granted) {
                         scheduleSendingSms()
                     } else {
-                        Toast.makeText(this@CreateDelayedActivity, "not granted", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@CreateJobActivity, "not granted", Toast.LENGTH_LONG).show()
                     }
                 }
         timeInput.setOnClickListener {
@@ -86,7 +86,7 @@ class CreateDelayedActivity : RxAppCompatActivity() {
 
     companion object {
         fun start(context: Context) {
-            context.startActivity(Intent(context, CreateDelayedActivity::class.java))
+            context.startActivity(Intent(context, CreateJobActivity::class.java))
         }
     }
 }

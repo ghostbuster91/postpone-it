@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".job.create.CreateDelayedActivity" />
+        <activity android:name=".job.create.CreateJobActivity" />
 
         <receiver android:name=".MyStartServiceReceiver">
             <intent-filter>

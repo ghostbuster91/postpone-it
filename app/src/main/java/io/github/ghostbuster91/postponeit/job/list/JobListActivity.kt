@@ -6,7 +6,7 @@ import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAnd
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
-import io.github.ghostbuster91.postponeit.job.create.CreateDelayedActivity
+import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.job_layout.view.*
@@ -32,7 +32,7 @@ class JobListActivity : RxAppCompatActivity() {
             }
         }
         createDelayedSmsButton.setOnClickListener {
-            CreateDelayedActivity.start(this@JobListActivity)
+            CreateJobActivity.start(this@JobListActivity)
         }
     }
 
