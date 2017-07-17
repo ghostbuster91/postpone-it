@@ -23,6 +23,7 @@ class JobListActivity : RxAppCompatActivity() {
         jobList.adapter = basicAdapterWithLayoutAndBinder(items, R.layout.job_layout) { holder, item ->
             with(holder.itemView) {
                 jobName.text = item.id.toString()
+                jobStatus.text = item.status.toString()
                 targetSmsNumber.text = item.number
                 jobDate.text = item.timeInMillis.toString()
                 cancelJobButton.setOnClickListener {
