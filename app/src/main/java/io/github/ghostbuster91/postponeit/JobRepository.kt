@@ -13,7 +13,7 @@ interface JobRepository {
 
     fun getJobs(): List<DelayedJob>
 
-    fun removeJob(delayedJob: DelayedJob)
+    fun removeJob(delayedJobId: Int)
 
     fun addJob(delayedJob: DelayedJob)
 
@@ -30,8 +30,8 @@ class JobRepositoryImpl(private val context: Context) : JobRepository {
 
     override fun getJobs(): List<DelayedJob> = sharedPrefs.read(KEY) ?: emptyList()
 
-    override fun removeJob(delayedJob: DelayedJob) {
-        val newJobList = getJobs().filter { it != delayedJob }
+    override fun removeJob(delayedJobId: Int) {
+        val newJobList = getJobs().filter { it.id != delayedJobId }
         sharedPrefs.write(KEY, newJobList)
     }
 
@@ -45,7 +45,7 @@ class JobRepositoryImpl(private val context: Context) : JobRepository {
     }
 }
 
-data class DelayedJob(val id: String,
+data class DelayedJob(val id: Int,
                       val text: String,
                       val number: String,
                       val timeInMillis: Long) : Serializable
