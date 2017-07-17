@@ -7,7 +7,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.job_layout.view.*
 
-class MainActivity : RxAppCompatActivity() {
+class JobListActivity : RxAppCompatActivity() {
 
     private val jobRepository = jobRepositoryProvider
     private val jobService = jobServiceProvider
@@ -26,7 +26,7 @@ class MainActivity : RxAppCompatActivity() {
             }
         }
         createDelayedSmsButton.setOnClickListener {
-            CreateDelayedActivity.start(this@MainActivity)
+            CreateDelayedActivity.start(this@JobListActivity)
         }
     }
 
