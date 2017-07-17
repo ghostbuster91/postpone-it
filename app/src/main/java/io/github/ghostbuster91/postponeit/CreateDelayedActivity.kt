@@ -27,7 +27,7 @@ class CreateDelayedActivity : RxAppCompatActivity() {
                 .flatMap { requestSmsPermission }
                 .subscribe { granted ->
                     if (granted) {
-                        onSmsClick()
+                        scheduleSendingSms()
                     } else {
                         Toast.makeText(this@CreateDelayedActivity, "not granted", Toast.LENGTH_LONG).show()
                     }
@@ -64,17 +64,22 @@ class CreateDelayedActivity : RxAppCompatActivity() {
         dpd.show(fragmentManager, "Datepickerdialog")
     }
 
-    private fun onSmsClick() {
-        val time = timeInput.text.split(":")
-        val date = dateInput.text.split("/")
-        val timeInMillis = Calendar.getInstance().apply {
+    private fun scheduleSendingSms() {
+        val timeInMillis = getTimeInMillis()
+        jobService.createJob(timeInMillis, smsTextInput.text.toString(), smsNumberInput.text.toString())
+        finish()
+    }
+
+    private fun getTimeInMillis(): Long {
+        return Calendar.getInstance().apply {
+            val time = timeInput.text.split(":")
+            val date = dateInput.text.split("/")
             set(Calendar.HOUR, time.first().toInt())
             set(Calendar.MINUTE, time.last().toInt())
             set(Calendar.DAY_OF_MONTH, date.first().toInt())
             set(Calendar.MONTH, date[1].toInt())
             set(Calendar.YEAR, date[2].toInt())
         }.timeInMillis
-        jobService.createJob(timeInMillis, smsTextInput.text.toString(), smsNumberInput.text.toString())
     }
 
     companion object {
