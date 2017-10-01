@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">PostponeIt</string>
     <string name="create_job_submit_button">Submit</string>
-    <string name="create_job_date_hint">Date</string>
-    <string name="create_job_time_hint">Time</string>
+    <string name="create_job_date_hint">Set date</string>
+    <string name="create_job_time_hint">Set time</string>
     <string name="create_job_text_hint">Text</string>
-    <string name="create_job_number_hint">Number</string>
+    <string name="create_job_number_hint">Phone number</string>
     <string name="create_job_date_format">%1$s/%2$s/%3$s</string>
     <string name="create_job_hour_format">%1$s:%2$s</string>
 </resources>
