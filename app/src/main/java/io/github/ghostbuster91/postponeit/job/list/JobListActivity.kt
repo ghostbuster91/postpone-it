@@ -12,9 +12,11 @@ import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
+import io.github.ghostbuster91.postponeit.job.JobFilter
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
+import io.github.ghostbuster91.postponeit.utils.toDate
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.job_layout.view.*
 import java.util.*
@@ -23,7 +25,7 @@ class JobListActivity : RxAppCompatActivity() {
 
     private val jobService = jobServiceProvider
     private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
-        basicAdapterWithLayoutAndBinder(jobService.getJobs(), R.layout.job_layout, this::bindJob)
+        basicAdapterWithLayoutAndBinder(jobService.getJobs(filter = JobFilter.PENDING), R.layout.job_layout, this::bindJob)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +37,7 @@ class JobListActivity : RxAppCompatActivity() {
         createDelayedSmsButton.setOnClickListener {
             CreateJobActivity.start(this@JobListActivity)
         }
-        val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper({ position -> cancelJob(basicAdapter.items[position].id) }))
+        val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(this, { position -> cancelJob(basicAdapter.items[position].id) }))
         itemTouchHelper.attachToRecyclerView(jobList)
         val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         jobList.addItemDecoration(dividerItemDecoration)
@@ -43,7 +45,7 @@ class JobListActivity : RxAppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        basicAdapter.items = jobService.getJobs()
+        basicAdapter.items = jobService.getJobs(filter = JobFilter.PENDING)
         jobList.adapter.notifyDataSetChanged()
     }
 
@@ -61,9 +63,7 @@ class JobListActivity : RxAppCompatActivity() {
 
     private fun cancelJob(jobToCancelId: Int) {
         jobService.cancelJob(jobToCancelId)
-        basicAdapter.items = jobService.getJobs()
+        basicAdapter.items = jobService.getJobs(filter = JobFilter.PENDING)
         jobList.adapter.notifyDataSetChanged()
     }
 }
-
-private fun Calendar.toDate() = Date(timeInMillis)

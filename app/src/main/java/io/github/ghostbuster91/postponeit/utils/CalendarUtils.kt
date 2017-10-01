@@ -16,3 +16,5 @@ val Calendar.hour: Int
 
 val Calendar.minute: Int
     get() = get(Calendar.MINUTE)
+
+fun Calendar.toDate() = Date(timeInMillis)

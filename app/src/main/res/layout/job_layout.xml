@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/material_margin_small"
-    android:layout_marginEnd="@dimen/material_margin_medium"
-    android:layout_marginStart="@dimen/material_margin_medium"
-    android:layout_marginTop="@dimen/material_margin_small"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/material_margin_small"
+    android:paddingEnd="@dimen/material_margin_medium"
+    android:paddingStart="@dimen/material_margin_medium"
+    android:paddingTop="@dimen/material_margin_small">
 
     <TextView
         android:id="@+id/targetSmsNumber"

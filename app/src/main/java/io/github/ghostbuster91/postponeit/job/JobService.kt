@@ -10,7 +10,7 @@ interface JobService {
     fun cancelJob(jobToCancelId: Int)
     fun findJob(delayedJobId: Int): DelayedJob
     fun updateJob(delayedJob: DelayedJob)
-    fun getJobs(): List<DelayedJob>
+    fun getJobs(filter: JobFilter = JobFilter.ALL): List<DelayedJob>
 }
 
 private class JobServiceImpl(
@@ -40,7 +40,7 @@ private class JobServiceImpl(
         jobRepository.updateJob(delayedJob)
     }
 
-    override fun getJobs() = jobRepository.getJobs()
+    override fun getJobs(filter: JobFilter) = filter.apply(jobRepository.getJobs())
 
     private fun createAlarmIntent(delayedJobId: Int): android.app.PendingIntent? {
         val intent = SendSmsJobExecutor.Companion.intent(context, delayedJobId)
