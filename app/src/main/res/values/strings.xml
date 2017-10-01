@@ -5,4 +5,6 @@
     <string name="create_job_time_hint">Time</string>
     <string name="create_job_text_hint">Text</string>
     <string name="create_job_number_hint">Number</string>
+    <string name="create_job_date_format">%1$s/%2$s/%3$s</string>
+    <string name="create_job_hour_format">%1$s:%2$s</string>
 </resources>

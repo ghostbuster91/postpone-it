@@ -34,37 +34,61 @@ class CreateJobActivity : RxAppCompatActivity() {
                         Toast.makeText(this@CreateJobActivity, "not granted", Toast.LENGTH_LONG).show()
                     }
                 }
-        timeInput.setOnClickListener {
-            showTimePicker()
-        }
+        val calendar = Calendar.getInstance()
+        initTimePicker(calendar)
+        initDatePicker(calendar)
+    }
+
+    private fun initDatePicker(calendar: Calendar) {
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+        setNewDate(currentDay, currentMonth, currentYear)
         dateInput.setOnClickListener {
-            showDatePicker()
+            showDatePicker(currentYear, currentMonth, currentDay)
         }
     }
 
-    private fun showDatePicker() {
-        val now = Calendar.getInstance()
+    private fun initTimePicker(calendar: Calendar) {
+        val currentHour = calendar.get(Calendar.HOUR)
+        val currentMinute = calendar.get(Calendar.MINUTE)
+        setNewTime(currentHour, currentMinute)
+        timeInput.setOnClickListener {
+            showTimePicker(currentHour, currentMinute)
+        }
+    }
+
+    private fun showDatePicker(currentYear: Int, currentMonth: Int, currentDay: Int) {
         val dpd = DatePickerDialog.newInstance(
-                { v, y, m, d ->
-                    dateInput.setText("$d/$m/$y")
+                { _, y, m, d ->
+                    setNewDate(d, m, y)
                 },
-                now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.DAY_OF_MONTH))
+                currentYear,
+                currentMonth,
+                currentDay)
         dpd.show(fragmentManager, "Datepickerdialog")
     }
 
-    private fun showTimePicker() {
-        val now = Calendar.getInstance()
+    private fun setNewDate(d: Int, m: Int, y: Int) {
+        dateInput.setText(getString(R.string.create_job_date_format, d.leadingZero(), m.leadingZero(), y.leadingZero()))
+    }
+
+    private fun showTimePicker(currentHour: Int, currentMinute: Int) {
         val dpd = TimePickerDialog.newInstance(
                 { v, h, m, s ->
-                    timeInput.setText("$h:$m")
+                    setNewTime(h, m)
                 },
-                now.get(Calendar.HOUR),
-                now.get(Calendar.MINUTE),
+                currentHour,
+                currentMinute,
                 true)
-        dpd.show(fragmentManager, "Datepickerdialog")
+        dpd.show(fragmentManager, "TimepickerDialog")
     }
+
+    private fun setNewTime(h: Int, m: Int) {
+        timeInput.setText(getString(R.string.create_job_hour_format, h.leadingZero(), m.leadingZero()))
+    }
+
+    private fun Int.leadingZero() = String.format("%02d", this)
 
     private fun scheduleSendingSms() {
         val timeInMillis = getTimeInMillis()
