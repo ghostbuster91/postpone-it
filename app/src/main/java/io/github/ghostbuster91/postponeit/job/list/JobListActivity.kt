@@ -1,6 +1,5 @@
 package io.github.ghostbuster91.postponeit.job.list
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
