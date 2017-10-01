@@ -22,7 +22,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".job.create.CreateJobActivity" />
+        <activity
+            android:name=".job.create.CreateJobActivity"
+            android:theme="@style/CreateDelayedJobTheme" />
 
         <receiver android:name=".MyStartServiceReceiver">
             <intent-filter>

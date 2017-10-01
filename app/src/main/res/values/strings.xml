@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">PostponeIt</string>
-    <string name="create_job_submit_button">Submit</string>
     <string name="create_job_date_hint">Set date</string>
     <string name="create_job_time_hint">Set time</string>
     <string name="create_job_text_hint">Text</string>

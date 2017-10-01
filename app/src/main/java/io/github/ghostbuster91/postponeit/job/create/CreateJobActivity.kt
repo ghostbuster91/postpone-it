@@ -23,6 +23,7 @@ class CreateJobActivity : RxAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_delayed_layout)
+        setSupportActionBar(toolbar)
         val requestSmsPermission = RxPermissions(this).request(Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE)
         scheduleButton.clicks()
                 .bindToLifecycle(this)
