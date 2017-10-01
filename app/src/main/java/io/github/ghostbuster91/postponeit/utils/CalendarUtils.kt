@@ -15,8 +15,8 @@ var Calendar.year: Int
     set(value) = set(Calendar.YEAR, value)
 
 var Calendar.hour: Int
-    get() = get(Calendar.HOUR)
-    set(value) = set(Calendar.HOUR, value)
+    get() = get(Calendar.HOUR_OF_DAY)
+    set(value) = set(Calendar.HOUR_OF_DAY, value)
 
 var Calendar.minute: Int
     get() = get(Calendar.MINUTE)
