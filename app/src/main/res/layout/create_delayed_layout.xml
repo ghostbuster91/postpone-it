@@ -15,7 +15,8 @@
             android:id="@+id/smsNumberInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/create_job_number_hint" />
+            android:hint="@string/create_job_number_hint"
+            android:inputType="phone" />
 
     </android.support.design.widget.TextInputLayout>
 
