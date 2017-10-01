@@ -5,7 +5,6 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.text.format.DateFormat.getDateFormat
-import android.text.format.DateFormat.getTimeFormat
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.elpassion.android.commons.recycler.basic.BasicAdapter
 import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
@@ -19,6 +18,8 @@ import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
 import io.github.ghostbuster91.postponeit.utils.toDate
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.job_layout.view.*
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class JobListActivity : RxAppCompatActivity() {
@@ -55,7 +56,7 @@ class JobListActivity : RxAppCompatActivity() {
             jobContent.text = getString(R.string.job_list_message, item.text)
             val calendar = Calendar.getInstance().apply { timeInMillis = item.timeInMillis }
             val dateFormat = getDateFormat(context)
-            val timeFormat = getTimeFormat(context)
+            val timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, resources.configuration.locale)
             val toDate = calendar.toDate()
             jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
         }

@@ -2,19 +2,24 @@ package io.github.ghostbuster91.postponeit.utils
 
 import java.util.*
 
-val Calendar.day: Int
+var Calendar.day: Int
     get() = get(Calendar.DAY_OF_MONTH)
+    set(value) = set(Calendar.DAY_OF_MONTH, value)
 
-val Calendar.month: Int
+var Calendar.month: Int
     get() = get(Calendar.MONTH)
+    set(value) = set(Calendar.MONTH, value)
 
-val Calendar.year: Int
+var Calendar.year: Int
     get() = get(Calendar.YEAR)
+    set(value) = set(Calendar.YEAR, value)
 
-val Calendar.hour: Int
+var Calendar.hour: Int
     get() = get(Calendar.HOUR)
+    set(value) = set(Calendar.HOUR, value)
 
-val Calendar.minute: Int
+var Calendar.minute: Int
     get() = get(Calendar.MINUTE)
+    set(value) = set(Calendar.MINUTE, value)
 
 fun Calendar.toDate() = Date(timeInMillis)

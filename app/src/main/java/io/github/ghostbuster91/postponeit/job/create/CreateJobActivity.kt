@@ -15,6 +15,8 @@ import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import io.github.ghostbuster91.postponeit.utils.*
 import kotlinx.android.synthetic.main.create_delayed_layout.*
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CreateJobActivity : RxAppCompatActivity() {
@@ -42,7 +44,7 @@ class CreateJobActivity : RxAppCompatActivity() {
     }
 
     private fun initDatePicker(calendar: Calendar) {
-        with(calendar){
+        with(calendar) {
             setNewDate(day, month, year)
             dateInput.setOnClickListener {
                 showDatePicker(year, month, day)
@@ -51,8 +53,8 @@ class CreateJobActivity : RxAppCompatActivity() {
     }
 
     private fun initTimePicker(calendar: Calendar) {
-        with(calendar){
-            setNewTime(hour, minute)
+        with(calendar) {
+            setNewTime(calendar.toDate())
             timeInput.setOnClickListener {
                 showTimePicker(hour, minute)
             }
@@ -77,7 +79,10 @@ class CreateJobActivity : RxAppCompatActivity() {
     private fun showTimePicker(currentHour: Int, currentMinute: Int) {
         val dpd = TimePickerDialog.newInstance(
                 { _, h, m, _ ->
-                    setNewTime(h, m)
+                    setNewTime(Calendar.getInstance().apply {
+                        hour = h
+                        minute = m
+                    }.toDate())
                 },
                 currentHour,
                 currentMinute,
@@ -85,8 +90,9 @@ class CreateJobActivity : RxAppCompatActivity() {
         dpd.show(fragmentManager, "TimepickerDialog")
     }
 
-    private fun setNewTime(h: Int, m: Int) {
-        timeInput.setText(getString(R.string.create_job_hour_format, h.leadingZero(), m.leadingZero()))
+    private fun setNewTime(time: Date) {
+        val timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, resources.configuration.locale)
+        timeInput.setText(timeFormat.format(time))
     }
 
     private fun Int.leadingZero() = String.format("%02d", this)
@@ -101,11 +107,11 @@ class CreateJobActivity : RxAppCompatActivity() {
         return Calendar.getInstance().apply {
             val time = timeInput.text.split(":")
             val date = dateInput.text.split("/")
-            set(Calendar.HOUR, time.first().toInt())
-            set(Calendar.MINUTE, time.last().toInt())
-            set(Calendar.DAY_OF_MONTH, date.first().toInt())
-            set(Calendar.MONTH, date[1].toInt())
-            set(Calendar.YEAR, date[2].toInt())
+            hour = time.first().toInt()
+            minute = time.last().toInt()
+            day = date.first().toInt()
+            month = date[1].toInt()
+            year = date[2].toInt()
         }.timeInMillis
     }
 
