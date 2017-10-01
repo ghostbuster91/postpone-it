@@ -41,7 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:hint="@string/create_job_time_hint" />
+            android:hint="@string/create_job_time_hint"
+            android:inputType="time" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -54,7 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
-            android:hint="@string/create_job_date_hint" />
+            android:hint="@string/create_job_date_hint"
+            android:inputType="date" />
 
     </android.support.design.widget.TextInputLayout>
 
