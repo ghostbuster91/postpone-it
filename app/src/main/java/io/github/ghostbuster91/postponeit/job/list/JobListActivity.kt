@@ -1,8 +1,10 @@
 package io.github.ghostbuster91.postponeit.job.list
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
+import com.elpassion.android.commons.recycler.basic.BasicAdapter
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
@@ -14,13 +16,8 @@ import kotlinx.android.synthetic.main.job_layout.view.*
 class JobListActivity : RxAppCompatActivity() {
 
     private val jobService = jobServiceProvider
-    private var items = emptyList<DelayedJob>()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        jobList.layoutManager = LinearLayoutManager(this)
-        jobList.adapter = basicAdapterWithLayoutAndBinder(items, R.layout.job_layout) { holder, item ->
+    private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
+        basicAdapterWithLayoutAndBinder(jobService.getJobs(), R.layout.job_layout) { holder, item ->
             with(holder.itemView) {
                 jobName.text = item.id.toString()
                 jobStatus.text = item.status.toString()
@@ -31,20 +28,28 @@ class JobListActivity : RxAppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        jobList.layoutManager = LinearLayoutManager(this)
+        val adapter = basicAdapter
+        jobList.adapter = adapter
         createDelayedSmsButton.setOnClickListener {
             CreateJobActivity.start(this@JobListActivity)
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        items = jobService.getJobs()
+    private fun onJobCancel(item: DelayedJob) {
+        jobService.cancelJob(item)
+        basicAdapter.items = jobService.getJobs()
         jobList.adapter.notifyDataSetChanged()
     }
 
-    private fun onJobCancel(item: DelayedJob) {
-        jobService.cancelJob(item)
-        items = jobService.getJobs()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        basicAdapter.items = jobService.getJobs()
         jobList.adapter.notifyDataSetChanged()
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }
