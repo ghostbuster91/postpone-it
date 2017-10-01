@@ -13,6 +13,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
+import io.github.ghostbuster91.postponeit.utils.*
 import kotlinx.android.synthetic.main.create_delayed_layout.*
 import java.util.*
 
@@ -41,21 +42,20 @@ class CreateJobActivity : RxAppCompatActivity() {
     }
 
     private fun initDatePicker(calendar: Calendar) {
-        val currentYear = calendar.get(Calendar.YEAR)
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-        setNewDate(currentDay, currentMonth, currentYear)
-        dateInput.setOnClickListener {
-            showDatePicker(currentYear, currentMonth, currentDay)
+        with(calendar){
+            setNewDate(day, month, year)
+            dateInput.setOnClickListener {
+                showDatePicker(year, month, day)
+            }
         }
     }
 
     private fun initTimePicker(calendar: Calendar) {
-        val currentHour = calendar.get(Calendar.HOUR)
-        val currentMinute = calendar.get(Calendar.MINUTE)
-        setNewTime(currentHour, currentMinute)
-        timeInput.setOnClickListener {
-            showTimePicker(currentHour, currentMinute)
+        with(calendar){
+            setNewTime(hour, minute)
+            timeInput.setOnClickListener {
+                showTimePicker(hour, minute)
+            }
         }
     }
 
@@ -76,7 +76,7 @@ class CreateJobActivity : RxAppCompatActivity() {
 
     private fun showTimePicker(currentHour: Int, currentMinute: Int) {
         val dpd = TimePickerDialog.newInstance(
-                { v, h, m, s ->
+                { _, h, m, _ ->
                     setNewTime(h, m)
                 },
                 currentHour,

@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/material_margin_small"
+    android:layout_marginEnd="@dimen/material_margin_medium"
+    android:layout_marginStart="@dimen/material_margin_medium"
+    android:layout_marginTop="@dimen/material_margin_small"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/jobName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/jobDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/targetSmsNumber"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:text="Send to: +48 522 133 444" />
 
     <TextView
-        android:id="@+id/jobStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/cancelJobButton"
+        android:id="@+id/jobDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="cancelJob" />
+        tools:text="When: 11/01/2017 on 11:44" />
 
+    <TextView
+        android:id="@+id/jobContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="Message: Hi John, remember to buy fruits before you arrive to home..." />
 </LinearLayout>

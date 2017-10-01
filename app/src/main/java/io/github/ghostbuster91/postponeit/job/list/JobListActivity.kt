@@ -1,20 +1,23 @@
 package io.github.ghostbuster91.postponeit.job.list
 
 import android.os.Bundle
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.format.DateFormat.getDateFormat
+import android.text.format.DateFormat.getTimeFormat
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.elpassion.android.commons.recycler.basic.BasicAdapter
 import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
-import com.elpassion.android.view.hide
-import com.elpassion.android.view.show
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
-import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
+import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.job_layout.view.*
+import java.util.*
 
 class JobListActivity : RxAppCompatActivity() {
 
@@ -32,6 +35,10 @@ class JobListActivity : RxAppCompatActivity() {
         createDelayedSmsButton.setOnClickListener {
             CreateJobActivity.start(this@JobListActivity)
         }
+        val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper({ position -> cancelJob(basicAdapter.items[position].id) }))
+        itemTouchHelper.attachToRecyclerView(jobList)
+        val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
+        jobList.addItemDecoration(dividerItemDecoration)
     }
 
     override fun onResume() {
@@ -42,24 +49,21 @@ class JobListActivity : RxAppCompatActivity() {
 
     private fun bindJob(holder: ViewHolderBinder<DelayedJob>, item: DelayedJob) {
         with(holder.itemView) {
-            jobName.text = item.id.toString()
-            jobStatus.text = item.status.toString()
-            targetSmsNumber.text = item.number
-            jobDate.text = item.timeInMillis.toString()
-            if (item.status == DelayedJobStatus.PENDING) {
-                cancelJobButton.show()
-            } else {
-                cancelJobButton.hide()
-            }
-            cancelJobButton.setOnClickListener {
-                onJobCancel(item)
-            }
+            targetSmsNumber.text = getString(R.string.job_list_send_to, item.number)
+            jobContent.text = getString(R.string.job_list_message, item.text)
+            val calendar = Calendar.getInstance().apply { timeInMillis = item.timeInMillis }
+            val dateFormat = getDateFormat(context)
+            val timeFormat = getTimeFormat(context)
+            val toDate = calendar.toDate()
+            jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
         }
     }
 
-    private fun onJobCancel(item: DelayedJob) {
-        jobService.cancelJob(item)
+    private fun cancelJob(jobToCancelId: Int) {
+        jobService.cancelJob(jobToCancelId)
         basicAdapter.items = jobService.getJobs()
         jobList.adapter.notifyDataSetChanged()
     }
 }
+
+private fun Calendar.toDate() = Date(timeInMillis)
