@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TextInputEditText
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -98,9 +99,27 @@ class CreateJobActivity : RxAppCompatActivity() {
     private fun Int.leadingZero() = String.format("%02d", this)
 
     private fun scheduleSendingSms() {
-        val timeInMillis = getTimeInMillis()
-        jobService.createJob(timeInMillis, smsTextInput.text.toString(), smsNumberInput.text.toString())
-        finish()
+        val isValidationOk = listOf(
+                emptyValidator(smsNumberInput, "Number cannot be empty"),
+                emptyValidator(smsTextInput, "Text cannot be empty"),
+                emptyValidator(timeInput, "Time cannot be empty"),
+                emptyValidator(dateInput, "Date cannot be empty"))
+                .all { it }
+        if (isValidationOk) {
+            val timeInMillis = getTimeInMillis()
+            jobService.createJob(timeInMillis, smsTextInput.text.toString(), smsNumberInput.text.toString())
+            finish()
+        }
+    }
+
+    fun emptyValidator(input: TextInputEditText, errorMessage: String): Boolean {
+        return if (input.text.isBlank()) {
+            input.error = errorMessage
+            false
+        } else {
+            input.error = null
+            true
+        }
     }
 
     private fun getTimeInMillis(): Long {
