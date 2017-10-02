@@ -12,7 +12,7 @@ import android.util.Log
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
-import io.github.ghostbuster91.postponeit.job.list.JobListActivity
+import io.github.ghostbuster91.postponeit.job.list.JobListFragment
 
 class SendSmsJobExecutor : BroadcastReceiver() {
 
@@ -25,7 +25,7 @@ class SendSmsJobExecutor : BroadcastReceiver() {
         smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, null, null)
         jobService.updateJob(delayedJob.copy(status = DelayedJobStatus.EXECUTED))
         Log.d(SendSmsJobExecutor::class.java.name, "$delayedJob exeuted")
-        val notificationClickIntent = PendingIntent.getActivity(context, 0, Intent(context, JobListActivity::class.java), 0)
+        val notificationClickIntent = PendingIntent.getActivity(context, 0, Intent(context, JobListFragment::class.java), 0)
         val notification = createNotification(context, notificationClickIntent, "Sms sent to ${delayedJob.number}", delayedJob.text)
         val mNotificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.notify(0, notification)

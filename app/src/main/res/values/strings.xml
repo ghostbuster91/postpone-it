@@ -9,4 +9,6 @@
     <string name="job_list_send_to">Send to: %1$s</string>
     <string name="job_list_date_time">When: %1$s on %2$s</string>
     <string name="job_list_message">Msg: %1$s</string>
+    <string name="home_drawer_open">Open drawer</string>
+    <string name="home_drawer_close">Close drawer</string>
 </resources>
