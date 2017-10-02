@@ -16,7 +16,7 @@ import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
 import io.github.ghostbuster91.postponeit.utils.toDate
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.job_list.*
 import kotlinx.android.synthetic.main.job_layout.view.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -31,7 +31,7 @@ class JobListActivity : RxAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.job_list)
         jobList.layoutManager = LinearLayoutManager(this)
         val adapter = basicAdapter
         jobList.adapter = adapter
