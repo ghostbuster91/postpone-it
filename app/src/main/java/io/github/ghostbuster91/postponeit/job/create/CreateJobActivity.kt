@@ -112,7 +112,7 @@ class CreateJobActivity : RxAppCompatActivity() {
         }
     }
 
-    fun emptyValidator(input: TextInputEditText, errorMessage: String): Boolean {
+    private fun emptyValidator(input: TextInputEditText, errorMessage: String): Boolean {
         return if (input.text.isBlank()) {
             input.error = errorMessage
             false
