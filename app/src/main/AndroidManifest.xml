@@ -26,7 +26,7 @@
             android:name=".job.create.CreateJobActivity"
             android:theme="@style/CreateDelayedJobTheme" />
 
-        <receiver android:name=".MyStartServiceReceiver">
+        <receiver android:name=".RestoreAlarmsOnBootCompletedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

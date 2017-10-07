@@ -36,4 +36,4 @@ private class JobServiceImpl(private val alarmManagerService: AlarmManagerServic
     override fun getJobs(filter: JobFilter) = filter.apply(jobRepository.getJobs())
 }
 
-val jobServiceProvider: JobService by lazy { JobServiceImpl(alarmManagerServiceProvider, jobRepositoryProvider) }
+val jobServiceProvider: JobService by lazy { JobServiceImpl(alarmManagerServiceProvider(), jobRepositoryProvider()) }

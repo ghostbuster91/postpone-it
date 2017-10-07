@@ -7,7 +7,7 @@ import com.elpassion.android.commons.sharedpreferences.createSharedPrefs
 import com.elpassion.sharedpreferences.gsonadapter.gsonConverterAdapter
 import io.github.ghostbuster91.postponeit.contextProvider
 
-val jobRepositoryProvider: JobRepository by lazy { JobRepositoryImpl(contextProvider()) }
+val jobRepositoryProvider: () -> JobRepository = { JobRepositoryImpl(contextProvider()) }
 
 interface JobRepository {
 
