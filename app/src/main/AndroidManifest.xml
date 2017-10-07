@@ -32,5 +32,7 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".job.execute.SendSmsJobExecutor" />
+        <receiver android:name=".result.SmsSendingResultReceiver" />
+        <receiver android:name=".result.SmsDeliveryResultReceiver" />
     </application>
 </manifest>

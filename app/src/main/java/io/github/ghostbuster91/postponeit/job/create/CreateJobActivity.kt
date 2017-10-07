@@ -22,7 +22,7 @@ import java.util.*
 
 class CreateJobActivity : RxAppCompatActivity() {
 
-    private val jobService = jobServiceProvider
+    private val jobService by lazy(jobServiceProvider)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

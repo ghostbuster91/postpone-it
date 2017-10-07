@@ -9,5 +9,12 @@ data class DelayedJob(val id: String,
 enum class DelayedJobStatus {
     PENDING,
     EXECUTED,
-    CANCELED
+    CANCELED,
+    DELIVERED_OK,
+    DELIVERED_ERROR_CANCELED,
+    SENT_OK,
+    SENT_ERROR_GENERIC,
+    SENT_ERROR_NULL_PDU,
+    SENT_ERROR_NO_SERVICE,
+    SENT_ERROR_RADIO_OFF
 }

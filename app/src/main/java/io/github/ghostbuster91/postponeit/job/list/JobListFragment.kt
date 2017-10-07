@@ -27,7 +27,7 @@ import java.util.*
 
 class JobListFragment : RxFragment() {
 
-    private val jobService = jobServiceProvider
+    private val jobService by lazy(jobServiceProvider)
     private val filter by lazy { arguments.getSerializable(FILTER_KEY) as JobFilter }
     private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
         basicAdapterWithLayoutAndBinder(jobService.getJobs(filter = filter), R.layout.job_layout, this::bindJob)
@@ -45,8 +45,10 @@ class JobListFragment : RxFragment() {
         createDelayedSmsButton.setOnClickListener {
             CreateJobActivity.start(context)
         }
-        val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(context, { position -> cancelJob(basicAdapter.items[position].id) }))
-        itemTouchHelper.attachToRecyclerView(jobList)
+        if (filter == JobFilter.PENDING) {
+            val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(context, { position -> cancelJob(basicAdapter.items[position].id) }))
+            itemTouchHelper.attachToRecyclerView(jobList)
+        }
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         jobList.addItemDecoration(dividerItemDecoration)
     }
@@ -66,6 +68,7 @@ class JobListFragment : RxFragment() {
             val timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, resources.configuration.locale)
             val toDate = calendar.toDate()
             jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
+            jobStatus.text = item.status.toString()
         }
     }
 

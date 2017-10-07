@@ -27,6 +27,6 @@ private class AlarmManagerServiceImpl(private val context: android.content.Conte
 
     private fun createAlarmIntent(delayedJobId: String): android.app.PendingIntent? {
         val intent = SendSmsJobExecutor.intent(context, delayedJobId)
-        return PendingIntent.getBroadcast(context, 0, intent, 0)
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }

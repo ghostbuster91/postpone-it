@@ -5,26 +5,46 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.support.v7.app.NotificationCompat
 import android.telephony.SmsManager
 import android.util.Log
 import io.github.ghostbuster91.postponeit.R
+import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import io.github.ghostbuster91.postponeit.job.list.JobListFragment
+import io.github.ghostbuster91.postponeit.result.SmsSendingResultReceiver
+import io.github.ghostbuster91.postponeit.result.SmsDeliveryResultReceiver
 
 class SendSmsJobExecutor : BroadcastReceiver() {
 
-    private val jobService by lazy { jobServiceProvider }
+    private val jobService by lazy(jobServiceProvider)
+    private val smsManager by lazy { SmsManager.getDefault() }
 
-    override fun onReceive(context: Context?, intent: Intent) {
-        val smsManager = SmsManager.getDefault()
-        val delayedJobId = intent.getStringExtra(KEY)
-        val delayedJob = jobService.findJob(delayedJobId)
-        smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, null, null)
+    override fun onReceive(context: Context, intent: Intent) {
+        val delayedJob = jobService.findJob(intent.getStringExtra(KEY))
+        val deliveryIntent = createDeliveryIntent(context, delayedJob)
+        val sentIntent = createSentIntent(context, delayedJob)
+        smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, sentIntent, deliveryIntent)
         jobService.updateJob(delayedJob.copy(status = DelayedJobStatus.EXECUTED))
         Log.d(SendSmsJobExecutor::class.java.name, "$delayedJob exeuted")
+        showNotification(context, delayedJob)
+    }
+
+    private fun createSentIntent(context: Context, delayedJob: DelayedJob): PendingIntent {
+        val sentIntent = SmsSendingResultReceiver.createIntent(context, delayedJob.id)
+        return wrapWithPendingIntent(context, sentIntent)
+    }
+
+    private fun createDeliveryIntent(context: Context, delayedJob: DelayedJob): PendingIntent {
+        val deliveredIntent = SmsDeliveryResultReceiver.createIntent(context, delayedJob.id)
+        return wrapWithPendingIntent(context, deliveredIntent)
+    }
+
+    private fun wrapWithPendingIntent(context: Context, intent: Intent?) =
+            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+    private fun showNotification(context: Context?, delayedJob: DelayedJob) {
         val notificationClickIntent = PendingIntent.getActivity(context, 0, Intent(context, JobListFragment::class.java), 0)
         val notification = createNotification(context, notificationClickIntent, "Sms sent to ${delayedJob.number}", delayedJob.text)
         val mNotificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -44,7 +64,6 @@ class SendSmsJobExecutor : BroadcastReceiver() {
         private const val KEY = "SMS_DATA_KEY"
         fun intent(context: Context, delayedJobId: String) =
                 Intent(context, SendSmsJobExecutor::class.java)
-                        .setData(Uri.parse(delayedJobId))
                         .putExtra(KEY, delayedJobId)
     }
 }
