@@ -69,7 +69,7 @@ class JobListFragment : RxFragment() {
         }
     }
 
-    private fun cancelJob(jobToCancelId: Int) {
+    private fun cancelJob(jobToCancelId: String) {
         jobService.cancelJob(jobToCancelId)
         basicAdapter.items = jobService.getJobs(filter = filter)
         jobList.adapter.notifyDataSetChanged()

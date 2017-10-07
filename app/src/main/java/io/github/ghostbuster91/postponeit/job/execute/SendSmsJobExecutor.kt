@@ -20,7 +20,7 @@ class SendSmsJobExecutor : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent) {
         val smsManager = SmsManager.getDefault()
-        val delayedJobId = intent.getIntExtra(KEY, 0)
+        val delayedJobId = intent.getStringExtra(KEY)
         val delayedJob = jobService.findJob(delayedJobId)
         smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, null, null)
         jobService.updateJob(delayedJob.copy(status = DelayedJobStatus.EXECUTED))
@@ -42,9 +42,9 @@ class SendSmsJobExecutor : BroadcastReceiver() {
 
     companion object {
         private const val KEY = "SMS_DATA_KEY"
-        fun intent(context: Context, delayedJobId: Int) =
+        fun intent(context: Context, delayedJobId: String) =
                 Intent(context, SendSmsJobExecutor::class.java)
-                        .setData(Uri.parse(delayedJobId.toString()))
+                        .setData(Uri.parse(delayedJobId))
                         .putExtra(KEY, delayedJobId)
     }
 }

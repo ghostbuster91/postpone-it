@@ -8,7 +8,7 @@ import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
 interface AlarmManagerService {
     fun createAlarm(job: DelayedJob)
 
-    fun cancelAlarm(jobId: Int)
+    fun cancelAlarm(jobId: String)
 }
 
 class AlarmManagerServiceImpl(private val context: android.content.Context) : AlarmManagerService {
@@ -19,11 +19,11 @@ class AlarmManagerServiceImpl(private val context: android.content.Context) : Al
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, job.timeInMillis, createAlarmIntent(job.id))
     }
 
-    override fun cancelAlarm(jobId: Int) {
+    override fun cancelAlarm(jobId: String) {
         alarmManager.cancel(createAlarmIntent(jobId))
     }
 
-    private fun createAlarmIntent(delayedJobId: Int): android.app.PendingIntent? {
+    private fun createAlarmIntent(delayedJobId: String): android.app.PendingIntent? {
         val intent = SendSmsJobExecutor.intent(context, delayedJobId)
         return PendingIntent.getBroadcast(context, 0, intent, 0)
     }
