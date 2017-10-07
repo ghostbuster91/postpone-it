@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
 
+val alarmManagerServiceProvider by lazy { AlarmManagerServiceImpl(contextProvider()) }
+
 interface AlarmManagerService {
     fun createAlarm(job: DelayedJob)
 
