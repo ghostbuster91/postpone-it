@@ -5,7 +5,7 @@ enum class JobFilter {
         override fun apply(input: List<DelayedJob>) = input
     },
     PENDING {
-        override fun apply(input: List<DelayedJob>) = input.filter { it.status == DelayedJobStatus.PENDING }
+        override fun apply(input: List<DelayedJob>) = input.filter { it.status == DelayedJobStatus.Pending }
 
     };
 

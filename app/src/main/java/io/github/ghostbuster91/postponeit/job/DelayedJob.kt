@@ -4,15 +4,19 @@ data class DelayedJob(val id: String,
                       val text: String,
                       val number: String,
                       val timeInMillis: Long,
-                      val status: DelayedJobStatus = DelayedJobStatus.PENDING)
+                      val status: DelayedJobStatus = DelayedJobStatus.Pending)
 
-enum class DelayedJobStatus {
-    PENDING,
-    EXECUTED,
-    CANCELED,
-    DELIVERED_OK,
+sealed class DelayedJobStatus {
+    object Pending : DelayedJobStatus()
+    object Executed : DelayedJobStatus()
+    object Canceled : DelayedJobStatus()
+    data class Error(val errorType : ErrorType) : DelayedJobStatus()
+    object Sent : DelayedJobStatus()
+    object Delivered : DelayedJobStatus()
+}
+
+enum class ErrorType {
     DELIVERED_ERROR_CANCELED,
-    SENT_OK,
     SENT_ERROR_GENERIC,
     SENT_ERROR_NULL_PDU,
     SENT_ERROR_NO_SERVICE,

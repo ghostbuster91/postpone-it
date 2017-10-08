@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
+import io.github.ghostbuster91.postponeit.job.ErrorType
 
 class SmsDeliveryResultReceiver : SmsResultReceiver() {
 
     override fun mapResultToJobStatus(resultCode: Int): DelayedJobStatus {
         return when (resultCode) {
-            Activity.RESULT_OK -> DelayedJobStatus.DELIVERED_OK
-            Activity.RESULT_CANCELED -> DelayedJobStatus.DELIVERED_ERROR_CANCELED
+            Activity.RESULT_OK -> DelayedJobStatus.Delivered
+            Activity.RESULT_CANCELED -> DelayedJobStatus.Error(errorType = ErrorType.DELIVERED_ERROR_CANCELED)
             else -> throw NotImplementedError("Unexpected error code")
         }
     }

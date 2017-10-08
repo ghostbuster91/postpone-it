@@ -21,7 +21,7 @@ interface JobRepository {
 }
 
 private class JobRepositoryImpl(private val context: Context) : JobRepository {
-    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, gsonConverterAdapter()))
+    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, gsonConverterAdapter(gsonProvider())))
 
     override fun updateJob(delayedJob: DelayedJob) {
         val newJobList = getJobs().filter { it.id != delayedJob.id } + delayedJob

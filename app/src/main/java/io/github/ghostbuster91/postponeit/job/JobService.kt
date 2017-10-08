@@ -24,7 +24,7 @@ private class JobServiceImpl(private val alarmManagerService: AlarmManagerServic
 
     override fun cancelJob(jobToCancelId: String) {
         val delayedJob1 = jobRepository.getJobs().first { it.id == jobToCancelId }
-        jobRepository.updateJob(delayedJob1.copy(status = DelayedJobStatus.CANCELED))
+        jobRepository.updateJob(delayedJob1.copy(status = DelayedJobStatus.Canceled))
     }
 
     override fun findJob(delayedJobId: String): DelayedJob = jobRepository.getJobs().first { it.id == delayedJobId }

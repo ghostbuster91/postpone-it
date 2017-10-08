@@ -26,7 +26,7 @@ class SendSmsJobExecutor : BroadcastReceiver() {
         val deliveryIntent = createDeliveryIntent(context, delayedJob)
         val sentIntent = createSentIntent(context, delayedJob)
         smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, sentIntent, deliveryIntent)
-        jobService.updateJob(delayedJob.copy(status = DelayedJobStatus.EXECUTED))
+        jobService.updateJob(delayedJob.copy(status = DelayedJobStatus.Executed))
         Log.d(SendSmsJobExecutor::class.java.name, "$delayedJob exeuted")
         showNotification(context, delayedJob)
     }
