@@ -9,13 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/leftMenuList"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/white"
-        android:choiceMode="singleChoice"
-        android:divider="#b7b1b1"
-        android:dividerHeight="1dp" />
+        android:background="@color/white" />
 </android.support.v4.widget.DrawerLayout>
