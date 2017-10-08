@@ -14,6 +14,7 @@ import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
 import com.trello.rxlifecycle2.components.support.RxFragment
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
+import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.JobFilter
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
 import io.github.ghostbuster91.postponeit.job.jobServiceProvider
@@ -68,7 +69,18 @@ class JobListFragment : RxFragment() {
             val timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, resources.configuration.locale)
             val toDate = calendar.toDate()
             jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
-            jobStatus.text = item.status.toString()
+            jobStatus.text = jobStatsDisplayNameResolver(item)
+        }
+    }
+
+    private fun jobStatsDisplayNameResolver(item: DelayedJob): CharSequence? {
+        return when (item.status) {
+            DelayedJobStatus.Pending -> getString(R.string.common_job_status_pending)
+            DelayedJobStatus.Executed -> getString(R.string.common_job_status_executed)
+            DelayedJobStatus.Canceled -> getString(R.string.common_job_status_canceled)
+            is DelayedJobStatus.Error -> getString(R.string.common_job_status_error)
+            DelayedJobStatus.Sent -> getString(R.string.common_job_status_sent)
+            DelayedJobStatus.Delivered -> getString(R.string.common_job_status_delivered)
         }
     }
 

@@ -11,4 +11,11 @@
     <string name="job_list_message">Msg: %1$s</string>
     <string name="home_drawer_open">Open drawer</string>
     <string name="home_drawer_close">Close drawer</string>
+    <string name="common_job_status_pending">Pending</string>
+    <string name="common_job_status_delivered">Delivered</string>
+    <string name="common_job_status_error">Error</string>
+    <string name="common_job_status_executed">Executed</string>
+    <string name="common_job_status_sent">Sent</string>
+    <string name="common_job_status_canceled">Canceled</string>
+
 </resources>
