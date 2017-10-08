@@ -1,5 +1,5 @@
 buildscript {
-    ext.android_support_version = '25.4.0'
+    ext.android_support_version = '26.1.0'
     ext.android_commons_version = '0.0.21'
     ext.rx_lifecycle_version = '2.1.0'
 }
@@ -9,12 +9,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "io.github.ghostbuster91.postponeit"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
