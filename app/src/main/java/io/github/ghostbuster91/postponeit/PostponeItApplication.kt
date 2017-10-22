@@ -4,6 +4,7 @@ import android.app.Application
 import io.github.ghostbuster91.postponeit.job.JobRepositoryImpl
 import io.github.ghostbuster91.postponeit.job.JobServiceImpl
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
+import io.github.ghostbuster91.postponeit.job.execute.NotificationServiceImpl
 import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
 import io.github.ghostbuster91.postponeit.job.gsonProvider
 import io.github.ghostbuster91.postponeit.job.list.JobListFragment
@@ -21,6 +22,7 @@ class PostponeItApplication : Application() {
         RestoreAlarmsOnBootCompletedReceiver.jobRepository = jobRepository
         SmsResultReceiver.jobService = jobService
         SendSmsJobExecutor.jobService = jobService
+        SendSmsJobExecutor.notificationService = NotificationServiceImpl(applicationContext)
 
         CreateJobActivity.jobService = jobService
         JobListFragment.jobService = jobService

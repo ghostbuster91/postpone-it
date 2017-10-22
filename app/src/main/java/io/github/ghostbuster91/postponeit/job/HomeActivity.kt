@@ -1,5 +1,7 @@
 package io.github.ghostbuster91.postponeit.job
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -27,7 +29,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.home_activity)
         showFragment(JobFilter.PENDING)
         leftMenuList.layoutManager = LinearLayoutManager(this)
-        var selectedItem : JobFilter? =null
+        var selectedItem: JobFilter? = JobFilter.PENDING
         leftMenuList.adapter = basicAdapterWithLayoutAndBinder(listOf(JobFilter.PENDING, JobFilter.ALL), R.layout.left_menu_item, { holder, item ->
             val textView = holder.itemView as TextView
             textView.text = item.name
@@ -63,5 +65,9 @@ class HomeActivity : AppCompatActivity() {
         return if (mDrawerToggle.onOptionsItemSelected(item)) {
             true
         } else super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        fun intent(context: Context) = Intent(context, HomeActivity::class.java)
     }
 }
