@@ -1,22 +1,24 @@
 package io.github.ghostbuster91.postponeit.job.execute
 
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.telephony.SmsManager
 import android.util.Log
+import com.github.salomonbrys.kodein.android.KodeinBroadcastReceiver
+import com.github.salomonbrys.kodein.instance
 import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.JobService
 import io.github.ghostbuster91.postponeit.result.SmsDeliveryResultReceiver
 import io.github.ghostbuster91.postponeit.result.SmsSendingResultReceiver
 
-class SendSmsJobExecutor : BroadcastReceiver() {
-
+class SendSmsJobExecutor : KodeinBroadcastReceiver() {
     private val smsManager by lazy { SmsManager.getDefault() }
+    private val notificationService by instance<NotificationService>()
+    private val jobService by instance<JobService>()
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onBroadcastReceived(context: Context, intent: Intent) {
         val delayedJob = jobService.findJob(intent.getStringExtra(KEY))
         val deliveryIntent = createDeliveryIntent(context, delayedJob)
         val sentIntent = createSentIntent(context, delayedJob)
@@ -45,8 +47,5 @@ class SendSmsJobExecutor : BroadcastReceiver() {
         fun intent(context: Context, delayedJobId: String) =
                 Intent(context, SendSmsJobExecutor::class.java)
                         .putExtra(KEY, delayedJobId)
-
-        lateinit var jobService: JobService
-        lateinit var notificationService: NotificationService
     }
 }

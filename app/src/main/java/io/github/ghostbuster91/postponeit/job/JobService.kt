@@ -12,7 +12,7 @@ interface JobService {
 }
 
 class JobServiceImpl(private val alarmManagerService: AlarmManagerService,
-                             private val jobRepository: JobRepository) : JobService {
+                     private val jobRepository: JobRepository) : JobService {
 
     override fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
         val id = UUID.randomUUID().toString()

@@ -1,15 +1,18 @@
 package io.github.ghostbuster91.postponeit.result
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.github.salomonbrys.kodein.android.KodeinBroadcastReceiver
+import com.github.salomonbrys.kodein.instance
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.JobService
 
-abstract class SmsResultReceiver : BroadcastReceiver() {
+abstract class SmsResultReceiver : KodeinBroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
+    private val jobService by instance<JobService>()
+
+    override fun onBroadcastReceived(context: Context, intent: Intent) {
         val delayedJob = jobService.findJob(intent.getStringExtra(JOB_ID))
         val newStatus = mapResultToJobStatus(resultCode)
         Log.d(SmsDeliveryResultReceiver::class.java.name, "Job updated to status: $newStatus")
@@ -20,6 +23,5 @@ abstract class SmsResultReceiver : BroadcastReceiver() {
 
     companion object {
         val JOB_ID = "JOB_KEY"
-        lateinit var jobService : JobService
     }
 }

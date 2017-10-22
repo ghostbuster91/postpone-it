@@ -11,6 +11,10 @@ import android.view.ViewGroup
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.elpassion.android.commons.recycler.basic.BasicAdapter
 import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
+import com.github.salomonbrys.kodein.LazyKodein
+import com.github.salomonbrys.kodein.LazyKodeinAware
+import com.github.salomonbrys.kodein.android.appKodein
+import com.github.salomonbrys.kodein.instance
 import com.trello.rxlifecycle2.components.support.RxFragment
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
@@ -26,7 +30,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JobListFragment : RxFragment() {
+class JobListFragment : RxFragment(), LazyKodeinAware {
+    override val kodein: LazyKodein = LazyKodein(appKodein)
+    private val jobService by instance<JobService>()
 
     private val filter by lazy { arguments.getSerializable(FILTER_KEY) as JobFilter }
     private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
@@ -98,7 +104,5 @@ class JobListFragment : RxFragment() {
                 }
             }
         }
-
-        lateinit var jobService: JobService
     }
 }

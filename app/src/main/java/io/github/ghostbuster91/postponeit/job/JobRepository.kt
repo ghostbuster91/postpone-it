@@ -1,7 +1,6 @@
 package io.github.ghostbuster91.postponeit.job
 
-import android.content.Context
-import android.preference.PreferenceManager
+import android.content.SharedPreferences
 import com.elpassion.android.commons.sharedpreferences.CachingSharedPreferenceRepository
 import com.elpassion.android.commons.sharedpreferences.createSharedPrefs
 import com.elpassion.sharedpreferences.gsonadapter.gsonConverterAdapter
@@ -18,8 +17,8 @@ interface JobRepository {
     fun updateJob(delayedJob: DelayedJob)
 }
 
-class JobRepositoryImpl(context: Context, gson: Gson) : JobRepository {
-    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, gsonConverterAdapter(gson)))
+class JobRepositoryImpl(sharedPreferences: SharedPreferences, gson: Gson) : JobRepository {
+    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ sharedPreferences }, gsonConverterAdapter(gson)))
 
     override fun updateJob(delayedJob: DelayedJob) {
         val newJobList = getJobs().filter { it.id != delayedJob.id } + delayedJob

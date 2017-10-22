@@ -1,30 +1,28 @@
 package io.github.ghostbuster91.postponeit
 
 import android.app.Application
-import io.github.ghostbuster91.postponeit.job.JobRepositoryImpl
-import io.github.ghostbuster91.postponeit.job.JobServiceImpl
-import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
+import android.content.Context
+import android.content.SharedPreferences
+import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.android.androidModule
+import com.google.gson.Gson
+import io.github.ghostbuster91.postponeit.job.*
+import io.github.ghostbuster91.postponeit.job.execute.NotificationService
 import io.github.ghostbuster91.postponeit.job.execute.NotificationServiceImpl
-import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
-import io.github.ghostbuster91.postponeit.job.gsonProvider
-import io.github.ghostbuster91.postponeit.job.list.JobListFragment
-import io.github.ghostbuster91.postponeit.result.SmsResultReceiver
 
-class PostponeItApplication : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-        val alarmManager = AlarmManagerServiceImpl(applicationContext)
-        val jobRepository = JobRepositoryImpl(applicationContext, gsonProvider())
-        val jobService = JobServiceImpl(alarmManager, jobRepository)
-
-        RestoreAlarmsOnBootCompletedReceiver.alarmServiceManager = alarmManager
-        RestoreAlarmsOnBootCompletedReceiver.jobRepository = jobRepository
-        SmsResultReceiver.jobService = jobService
-        SendSmsJobExecutor.jobService = jobService
-        SendSmsJobExecutor.notificationService = NotificationServiceImpl(applicationContext)
-
-        CreateJobActivity.jobService = jobService
-        JobListFragment.jobService = jobService
+class PostponeItApplication : Application(), KodeinAware {
+    override val kodein: Kodein by Kodein.lazy {
+        import(androidModule)
+        bind<AlarmManagerService>() with singleton { AlarmManagerServiceImpl(applicationContext) }
+        bind<NotificationService>() with singleton { NotificationServiceImpl(applicationContext) }
+        bind<Gson>() with singleton { gsonProvider() }
+        bind<JobRepository>() with singleton {
+            JobRepositoryImpl(
+                    sharedPreferences = factory<Context, SharedPreferences>()(applicationContext),
+                    gson = instance())
+        }
+        bind<JobService>() with singleton {
+            JobServiceImpl(alarmManagerService = instance(), jobRepository = instance())
+        }
     }
 }

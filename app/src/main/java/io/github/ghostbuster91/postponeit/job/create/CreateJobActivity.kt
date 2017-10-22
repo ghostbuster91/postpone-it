@@ -6,6 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputEditText
 import android.widget.Toast
+import com.github.salomonbrys.kodein.LazyKodein
+import com.github.salomonbrys.kodein.LazyKodeinAware
+import com.github.salomonbrys.kodein.android.appKodein
+import com.github.salomonbrys.kodein.instance
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
@@ -20,7 +24,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateJobActivity : RxAppCompatActivity() {
+class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
+    override val kodein: LazyKodein = LazyKodein(appKodein)
+    private val jobService by instance<JobService>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,7 +142,5 @@ class CreateJobActivity : RxAppCompatActivity() {
         fun start(context: Context) {
             context.startActivity(Intent(context, CreateJobActivity::class.java))
         }
-
-        lateinit var jobService: JobService
     }
 }
