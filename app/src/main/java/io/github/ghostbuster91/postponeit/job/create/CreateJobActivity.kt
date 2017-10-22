@@ -13,7 +13,7 @@ import com.trello.rxlifecycle2.kotlin.bindToLifecycle
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.github.ghostbuster91.postponeit.R
-import io.github.ghostbuster91.postponeit.job.jobServiceProvider
+import io.github.ghostbuster91.postponeit.job.JobService
 import io.github.ghostbuster91.postponeit.utils.*
 import kotlinx.android.synthetic.main.create_delayed_layout.*
 import java.text.DateFormat
@@ -21,8 +21,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CreateJobActivity : RxAppCompatActivity() {
-
-    private val jobService by lazy(jobServiceProvider)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,5 +136,7 @@ class CreateJobActivity : RxAppCompatActivity() {
         fun start(context: Context) {
             context.startActivity(Intent(context, CreateJobActivity::class.java))
         }
+
+        lateinit var jobService: JobService
     }
 }

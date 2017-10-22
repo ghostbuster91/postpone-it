@@ -5,11 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
-import io.github.ghostbuster91.postponeit.job.jobServiceProvider
+import io.github.ghostbuster91.postponeit.job.JobService
 
 abstract class SmsResultReceiver : BroadcastReceiver() {
-
-    private val jobService by lazy(jobServiceProvider)
 
     override fun onReceive(context: Context, intent: Intent) {
         val delayedJob = jobService.findJob(intent.getStringExtra(JOB_ID))
@@ -22,5 +20,6 @@ abstract class SmsResultReceiver : BroadcastReceiver() {
 
     companion object {
         val JOB_ID = "JOB_KEY"
+        lateinit var jobService : JobService
     }
 }

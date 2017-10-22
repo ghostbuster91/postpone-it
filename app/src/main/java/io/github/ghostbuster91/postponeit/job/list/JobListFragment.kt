@@ -16,8 +16,8 @@ import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.JobFilter
+import io.github.ghostbuster91.postponeit.job.JobService
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
-import io.github.ghostbuster91.postponeit.job.jobServiceProvider
 import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
 import io.github.ghostbuster91.postponeit.utils.toDate
 import kotlinx.android.synthetic.main.job_layout.view.*
@@ -28,7 +28,6 @@ import java.util.*
 
 class JobListFragment : RxFragment() {
 
-    private val jobService by lazy(jobServiceProvider)
     private val filter by lazy { arguments.getSerializable(FILTER_KEY) as JobFilter }
     private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
         basicAdapterWithLayoutAndBinder(jobService.getJobs(filter = filter), R.layout.job_layout, this::bindJob)
@@ -99,5 +98,7 @@ class JobListFragment : RxFragment() {
                 }
             }
         }
+
+        lateinit var jobService: JobService
     }
 }

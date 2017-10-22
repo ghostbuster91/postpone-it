@@ -5,9 +5,7 @@ import android.preference.PreferenceManager
 import com.elpassion.android.commons.sharedpreferences.CachingSharedPreferenceRepository
 import com.elpassion.android.commons.sharedpreferences.createSharedPrefs
 import com.elpassion.sharedpreferences.gsonadapter.gsonConverterAdapter
-import io.github.ghostbuster91.postponeit.contextProvider
-
-val jobRepositoryProvider: () -> JobRepository = { JobRepositoryImpl(contextProvider()) }
+import com.google.gson.Gson
 
 interface JobRepository {
 
@@ -20,8 +18,8 @@ interface JobRepository {
     fun updateJob(delayedJob: DelayedJob)
 }
 
-private class JobRepositoryImpl(private val context: Context) : JobRepository {
-    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, gsonConverterAdapter(gsonProvider())))
+class JobRepositoryImpl(context: Context, gson: Gson) : JobRepository {
+    private val sharedPrefs = CachingSharedPreferenceRepository(createSharedPrefs<List<DelayedJob>>({ PreferenceManager.getDefaultSharedPreferences(context) }, gsonConverterAdapter(gson)))
 
     override fun updateJob(delayedJob: DelayedJob) {
         val newJobList = getJobs().filter { it.id != delayedJob.id } + delayedJob

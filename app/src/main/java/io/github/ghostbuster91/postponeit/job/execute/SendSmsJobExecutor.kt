@@ -11,14 +11,13 @@ import android.util.Log
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.DelayedJob
 import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
-import io.github.ghostbuster91.postponeit.job.jobServiceProvider
+import io.github.ghostbuster91.postponeit.job.JobService
 import io.github.ghostbuster91.postponeit.job.list.JobListFragment
-import io.github.ghostbuster91.postponeit.result.SmsSendingResultReceiver
 import io.github.ghostbuster91.postponeit.result.SmsDeliveryResultReceiver
+import io.github.ghostbuster91.postponeit.result.SmsSendingResultReceiver
 
 class SendSmsJobExecutor : BroadcastReceiver() {
 
-    private val jobService by lazy(jobServiceProvider)
     private val smsManager by lazy { SmsManager.getDefault() }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -65,5 +64,7 @@ class SendSmsJobExecutor : BroadcastReceiver() {
         fun intent(context: Context, delayedJobId: String) =
                 Intent(context, SendSmsJobExecutor::class.java)
                         .putExtra(KEY, delayedJobId)
+
+        lateinit var jobService: JobService
     }
 }

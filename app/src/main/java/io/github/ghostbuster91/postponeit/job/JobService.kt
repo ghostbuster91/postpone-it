@@ -1,7 +1,6 @@
 package io.github.ghostbuster91.postponeit.job
 
 import io.github.ghostbuster91.postponeit.AlarmManagerService
-import io.github.ghostbuster91.postponeit.alarmManagerServiceProvider
 import java.util.*
 
 interface JobService {
@@ -12,7 +11,7 @@ interface JobService {
     fun getJobs(filter: JobFilter = JobFilter.ALL): List<DelayedJob>
 }
 
-private class JobServiceImpl(private val alarmManagerService: AlarmManagerService,
+class JobServiceImpl(private val alarmManagerService: AlarmManagerService,
                              private val jobRepository: JobRepository) : JobService {
 
     override fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
@@ -35,5 +34,3 @@ private class JobServiceImpl(private val alarmManagerService: AlarmManagerServic
 
     override fun getJobs(filter: JobFilter) = filter.apply(jobRepository.getJobs())
 }
-
-val jobServiceProvider: () -> JobService = { JobServiceImpl(alarmManagerServiceProvider(), jobRepositoryProvider()) }
