@@ -31,7 +31,7 @@ val gsonProvider: () -> Gson = {
             out.beginObject()
             out.name("type").value(value.javaClass.name)
             if (value is DelayedJobStatus.Error) {
-                out.name("value").value(value.toString())
+                out.name("value").value(value.errorType.toString())
             }
             out.endObject()
         }
