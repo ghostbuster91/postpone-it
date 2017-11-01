@@ -3,7 +3,10 @@ package io.github.ghostbuster91.postponeit.job.create
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.support.design.widget.TextInputEditText
 import android.widget.Toast
 import com.github.salomonbrys.kodein.LazyKodein
@@ -32,7 +35,8 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_delayed_layout)
         setSupportActionBar(toolbar)
-        val requestSmsPermission = RxPermissions(this).request(Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE)
+        val rxPermissions = RxPermissions(this)
+        val requestSmsPermission = rxPermissions.request(Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE)
         scheduleButton.clicks()
                 .bindToLifecycle(this)
                 .flatMap { requestSmsPermission }
@@ -40,12 +44,21 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                     if (granted) {
                         scheduleSendingSms()
                     } else {
-                        Toast.makeText(this@CreateJobActivity, "not granted", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "not granted", Toast.LENGTH_LONG).show()
                     }
                 }
         val calendar = Calendar.getInstance()
         initTimePicker(calendar)
         initDatePicker(calendar)
+        RxPermissions(this)
+                .request(Manifest.permission.READ_CONTACTS)
+                .subscribe { granted ->
+                    if (granted) {
+                        getContactList()
+                    } else {
+                        Toast.makeText(this, "not granted", Toast.LENGTH_LONG).show()
+                    }
+                }
     }
 
     private fun initDatePicker(calendar: Calendar) {
@@ -104,14 +117,14 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun scheduleSendingSms() {
         val isValidationOk = listOf(
-                emptyValidator(smsNumberInput, "Number cannot be empty"),
+               // emptyValidator(smsNumberInput, "Number cannot be empty"),
                 emptyValidator(smsTextInput, "Text cannot be empty"),
                 emptyValidator(timeInput, "Time cannot be empty"),
                 emptyValidator(dateInput, "Date cannot be empty"))
                 .all { it }
         if (isValidationOk) {
             val timeInMillis = getTimeInMillis()
-            jobService.createJob(timeInMillis, smsTextInput.text.toString(), smsNumberInput.text.toString())
+            jobService.createJob(timeInMillis, smsTextInput.text.toString(), "")
             finish()
         }
     }
@@ -138,9 +151,70 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         }.timeInMillis
     }
 
+    private fun getContactList() {
+        contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
+                .use { contactCursor ->
+                    chipContactList.filterableList = createContactList(contactCursor)
+                }
+    }
+
+    private fun createContactList(contactCursor: Cursor): MutableList<ContactChip> {
+        val contacts = mutableListOf<ContactChip>()
+        while (contactCursor.moveToNext()) {
+            val id = contactCursor.contactId
+            val name = contactCursor.displayName
+            val avatarUri = contactCursor.photoThumbnailUri?.let { Uri.parse(it) }
+            if (contactCursor.hasPhoneNumber) {
+                val numbers = getPhoneNumbers(id)
+                numbers.forEach {
+                    val contactChip = ContactChip(id = id, avatarUri = avatarUri, name = name, phoneNumber = it)
+                    contacts.add(contactChip)
+                }
+            }
+        }
+        return contacts
+    }
+
+    private fun getPhoneNumbers(contactId: String): MutableList<String> {
+        val numbers = mutableListOf<String>()
+        contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", arrayOf(contactId), null)
+                .use { phoneCursor ->
+                    while (phoneCursor.moveToNext()) {
+                        numbers.add(phoneCursor.phoneNumber)
+                    }
+                }
+        return numbers
+    }
+
     companion object {
         fun start(context: Context) {
             context.startActivity(Intent(context, CreateJobActivity::class.java))
         }
     }
 }
+
+private val Cursor.photoThumbnailUri: String?
+    get() {
+        return getString(getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
+    }
+
+private val Cursor.hasPhoneNumber: Boolean
+    get() {
+        return getInt(getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0
+    }
+
+private val Cursor.phoneNumber: String
+    get() {
+        return getString(getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+    }
+
+private val Cursor.displayName: String
+    get() {
+        return getString(getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
+    }
+
+private val Cursor.contactId: String
+    get() {
+        return getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))
+    }

@@ -25,21 +25,21 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.pchmn.materialchips.ChipsInput
+        android:id="@+id/chipContactList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/material_margin_medium"
         android:layout_marginRight="@dimen/material_margin_medium"
-        android:layout_marginTop="@dimen/material_margin_medium">
+        app:hint="Phone number"
+        app:maxRows="5" />
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/smsNumberInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/create_job_number_hint"
-            android:inputType="phone" />
-
-    </android.support.design.widget.TextInputLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="@dimen/material_margin_medium"
+        android:layout_marginRight="@dimen/material_margin_medium"
+        android:background="@color/black" />
 
     <LinearLayout
         android:layout_width="match_parent"
