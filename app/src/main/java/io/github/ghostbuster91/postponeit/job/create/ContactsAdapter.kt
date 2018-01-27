@@ -9,9 +9,9 @@ import android.widget.Filterable
 import io.github.ghostbuster91.postponeit.R
 import kotlinx.android.synthetic.main.create_job_suggestion_contact_item.view.*
 
-class ContactsAdapter(context: Context, list: List<Contact>) : ArrayAdapter<Contact>(context, R.layout.create_job_suggestion_contact_item, R.id.contactLabel, list.toMutableList()), Filterable {
+class ContactsAdapter(context: Context, list: List<Contact>, selectedContactFetcher: () -> List<Contact>) : ArrayAdapter<Contact>(context, R.layout.create_job_suggestion_contact_item, R.id.contactLabel, list.toMutableList()), Filterable {
 
-    private val filter = ContactAdapterFilter(list)
+    private val filter = ContactAdapterFilter(list, selectedContactFetcher)
 
     init {
         filter.subscribe {

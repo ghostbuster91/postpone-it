@@ -110,7 +110,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                 .map { getContactList() }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    contactsAdapter = ContactsAdapter(this, it)
+                    contactsAdapter = ContactsAdapter(this, it, selectedContactsAdapter::items)
                     contactSelector.setAdapter(contactsAdapter)
                     contactSelector.validator = ContactAdapterValidator(it)
                 }

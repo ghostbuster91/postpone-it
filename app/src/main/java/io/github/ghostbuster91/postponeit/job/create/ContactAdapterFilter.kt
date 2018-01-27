@@ -4,7 +4,8 @@ import android.widget.Filter
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.PublishSubject
 
-class ContactAdapterFilter(private val contacts: List<Contact>) : Filter() {
+class ContactAdapterFilter(private val contacts: List<Contact>,
+                           private val selectedContactsFetcher: () -> List<Contact>) : Filter() {
     private val filteringResults = PublishSubject.create<List<Contact>>()
 
     override fun convertResultToString(resultValue: Any) = (resultValue as Contact).label
@@ -12,10 +13,14 @@ class ContactAdapterFilter(private val contacts: List<Contact>) : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
         val results = FilterResults()
         if (constraint != null) {
-            contacts.filter { it.label.toLowerCase().startsWith(constraint.toString().toLowerCase()) }.let {
-                results.count = it.size
-                results.values = it
-            }
+            val selectedContacts = selectedContactsFetcher()
+            contacts
+                    .filter { it.label.startsWith(constraint.toString(), true) }
+                    .filterNot { it in selectedContacts }
+                    .let {
+                        results.count = it.size
+                        results.values = it
+                    }
         }
         return results
     }
