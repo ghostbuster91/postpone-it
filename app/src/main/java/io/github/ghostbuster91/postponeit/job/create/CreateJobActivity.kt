@@ -43,6 +43,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
     private val disposable = CompositeDisposable()
     private var contactsAdapter: ContactsAdapter? = null
     private val selectedContactsAdapter by lazy(LazyThreadSafetyMode.NONE, this::createSelectedContactsAdapter)
+    private val selectedTime = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +54,8 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         readContactsFromPhone(rxPermissions)
         selectedContactsView.adapter = selectedContactsAdapter
         selectedContactsView.layoutManager = FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP)
-        val calendar = Calendar.getInstance()
-        initTimePicker(calendar)
-        initDatePicker(calendar)
+        initTimePicker(selectedTime)
+        initDatePicker(selectedTime)
         contactSelector.setOnItemClickListener { parent, view, position, id ->
             contactSelector.setText("")
             val selectedContact = contactsAdapter!!.getItem(position)
@@ -147,6 +147,11 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
     private fun showDatePicker(currentYear: Int, currentMonth: Int, currentDay: Int) {
         val dpd = DatePickerDialog.newInstance(
                 { _, y, m, d ->
+                    selectedTime.apply {
+                        day = d
+                        month = m
+                        year = y
+                    }
                     setNewDate(d, m, y)
                 },
                 currentYear,
@@ -156,16 +161,17 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
     }
 
     private fun setNewDate(d: Int, m: Int, y: Int) {
-        dateInput.setText(getString(R.string.create_job_date_format, d.leadingZero(), m.leadingZero(), y.leadingZero()))
+        dateInput.setText(getString(R.string.create_job_date_format, d.leadingZero(), (m + 1).leadingZero(), y.leadingZero()))
     }
 
     private fun showTimePicker(currentHour: Int, currentMinute: Int) {
         val dpd = TimePickerDialog.newInstance(
                 { _, h, m, _ ->
-                    setNewTime(Calendar.getInstance().apply {
-                        hour = h
-                        minute = m
-                    }.toDate())
+                    setNewTime(
+                            selectedTime.apply {
+                                hour = h
+                                minute = m
+                            }.toDate())
                 },
                 currentHour,
                 currentMinute,
@@ -188,7 +194,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                 emptyValidator(dateInput, "Date cannot be empty"))
                 .all { it }
         if (isValidationOk) {
-            val timeInMillis = getTimeInMillis()
+            val timeInMillis = selectedTime.timeInMillis
             selectedContactsAdapter.items.forEach {
                 jobService.createJob(timeInMillis, smsTextInput.text.toString(), it.phoneNumber)
             }
@@ -214,18 +220,6 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
             input.error = null
             true
         }
-    }
-
-    private fun getTimeInMillis(): Long {
-        return Calendar.getInstance().apply {
-            val time = timeInput.text.split(":")
-            val date = dateInput.text.split("/")
-            hour = time.first().toInt()
-            minute = time.last().toInt()
-            day = date.first().toInt()
-            month = date[1].toInt()
-            year = date[2].toInt()
-        }.timeInMillis
     }
 
     private fun getContactList(): MutableList<Contact> {
