@@ -5,18 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.provider.ContactsContract
 import android.support.design.widget.TextInputEditText
-import android.support.v7.widget.LinearLayoutManager
-import android.widget.LinearLayout
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
+import com.elpassion.android.commons.recycler.basic.BasicAdapter
 import com.github.salomonbrys.kodein.LazyKodein
 import com.github.salomonbrys.kodein.LazyKodeinAware
 import com.github.salomonbrys.kodein.android.appKodein
 import com.github.salomonbrys.kodein.instance
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.jakewharton.rxbinding2.view.clicks
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
@@ -40,14 +42,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
     private val jobService by instance<JobService>()
     private val disposable = CompositeDisposable()
     private var contactsAdapter: ContactsAdapter? = null
-    private val selectedContactsAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        basicAdapterWithLayoutAndBinder(
-                mutableListOf<Contact>(),
-                R.layout.create_job_selected_contact_item,
-                { holder, item ->
-                    (holder.itemView as TextView).text = item.label
-                })
-    }
+    private val selectedContactsAdapter by lazy(LazyThreadSafetyMode.NONE, this::createSelectedContactsAdapter)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +52,32 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         addScheduleButtonClickListener(rxPermissions)
         readContactsFromPhone(rxPermissions)
         selectedContactsView.adapter = selectedContactsAdapter
-        selectedContactsView.layoutManager = LinearLayoutManager(this, LinearLayout.HORIZONTAL, false)
+        selectedContactsView.layoutManager = FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP)
         val calendar = Calendar.getInstance()
         initTimePicker(calendar)
         initDatePicker(calendar)
+        contactSelector.setOnItemClickListener { parent, view, position, id ->
+            contactSelector.setText("")
+            val selectedContact = contactsAdapter!!.getItem(position)
+            selectedContactsAdapter.items = selectedContactsAdapter.items + selectedContact
+            selectedContactsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun createSelectedContactsAdapter() =
+            basicAdapterWithLayoutAndBinder(
+                    mutableListOf<Contact>(),
+                    R.layout.create_job_selected_contact_item,
+                    { holder, item ->
+                        (holder.itemView as TextView).text = item.label
+                        holder.itemView.setOnClickListener {
+                            removeSelectedContact(item)
+                        }
+                    })
+
+    private fun removeSelectedContact(item: Contact) {
+        selectedContactsAdapter.items = selectedContactsAdapter.items - item
+        selectedContactsAdapter.notifyDataSetChanged()
     }
 
     private fun readContactsFromPhone(rxPermissions: RxPermissions) {
@@ -83,16 +100,6 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                         Toast.makeText(this, "not granted", Toast.LENGTH_LONG).show()
                     }
                 }
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        contactSelector.setOnItemClickListener { parent, view, position, id ->
-            contactSelector.setText("")
-            val selectedContact = contactsAdapter!!.getItem(position)
-            selectedContactsAdapter.items = selectedContactsAdapter.items + selectedContact
-            selectedContactsAdapter.notifyDataSetChanged()
-        }
     }
 
     private fun displayContactList(readContactsPermission: Observable<Boolean>) {
@@ -175,13 +182,14 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun scheduleSendingSms() {
         val isValidationOk = listOf(
+                selectedContactAdapterValidator(contactSelector, selectedContactsAdapter, "Provide at least one contact"),
                 emptyValidator(smsTextInput, "Text cannot be empty"),
                 emptyValidator(timeInput, "Time cannot be empty"),
                 emptyValidator(dateInput, "Date cannot be empty"))
                 .all { it }
         if (isValidationOk) {
             val timeInMillis = getTimeInMillis()
-            contactsAdapter?.getItems()?.forEach {
+            selectedContactsAdapter.items.forEach {
                 jobService.createJob(timeInMillis, smsTextInput.text.toString(), it.phoneNumber)
             }
             finish()
@@ -190,6 +198,16 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun emptyValidator(input: TextInputEditText, errorMessage: String): Boolean {
         return if (input.text.isBlank()) {
+            input.error = errorMessage
+            false
+        } else {
+            input.error = null
+            true
+        }
+    }
+
+    private fun selectedContactAdapterValidator(input: EditText, selectedContactsAdapter: BasicAdapter<Contact>, errorMessage: String): Boolean {
+        return if (selectedContactsAdapter.items.isEmpty()) {
             input.error = errorMessage
             false
         } else {

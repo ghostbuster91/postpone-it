@@ -25,14 +25,19 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <AutoCompleteTextView
-        android:id="@+id/contactSelector"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/material_margin_medium"
         android:layout_marginLeft="@dimen/material_margin_medium"
         android:layout_marginRight="@dimen/material_margin_medium"
-        android:layout_marginTop="@dimen/material_margin_medium"
-        android:hint="@string/create_job_send_to" />
+        android:layout_height="wrap_content">
+
+        <AutoCompleteTextView
+            android:id="@+id/contactSelector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/create_job_send_to" />
+    </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/selectedContactsView"
