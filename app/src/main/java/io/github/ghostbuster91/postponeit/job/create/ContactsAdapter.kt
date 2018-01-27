@@ -36,7 +36,5 @@ class ContactsAdapter(context: Context, list: List<Contact>) : ArrayAdapter<Cont
     }
 
     override fun getFilter() = filter
-
-    fun getItems() = (0 until count).map { getItem(it) }
 }
 
