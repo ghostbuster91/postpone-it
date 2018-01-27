@@ -4,11 +4,15 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.provider.ContactsContract
 import android.support.design.widget.TextInputEditText
+import android.support.v7.widget.LinearLayoutManager
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
 import com.github.salomonbrys.kodein.LazyKodein
 import com.github.salomonbrys.kodein.LazyKodeinAware
 import com.github.salomonbrys.kodein.android.appKodein
@@ -22,7 +26,11 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.JobService
 import io.github.ghostbuster91.postponeit.utils.*
-import kotlinx.android.synthetic.main.create_delayed_layout.*
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.create_job_layout.*
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,12 +38,44 @@ import java.util.*
 class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
     override val kodein: LazyKodein = LazyKodein(appKodein)
     private val jobService by instance<JobService>()
+    private val disposable = CompositeDisposable()
+    private var contactsAdapter: ContactsAdapter? = null
+    private val selectedContactsAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        basicAdapterWithLayoutAndBinder(
+                mutableListOf<Contact>(),
+                R.layout.create_job_selected_contact_item,
+                { holder, item ->
+                    (holder.itemView as TextView).text = item.label
+                })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.create_delayed_layout)
+        setContentView(R.layout.create_job_layout)
         setSupportActionBar(toolbar)
         val rxPermissions = RxPermissions(this)
+        addScheduleButtonClickListener(rxPermissions)
+        readContactsFromPhone(rxPermissions)
+        selectedContactsView.adapter = selectedContactsAdapter
+        selectedContactsView.layoutManager = LinearLayoutManager(this, LinearLayout.HORIZONTAL, false)
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onPostCreate(savedInstanceState, persistentState)
+        val calendar = Calendar.getInstance()
+        initTimePicker(calendar)
+        initDatePicker(calendar)
+    }
+
+    private fun readContactsFromPhone(rxPermissions: RxPermissions) {
+        val readContactsPermission = rxPermissions
+                .request(Manifest.permission.READ_CONTACTS)
+                .share()
+        displayContactList(readContactsPermission)
+        showPermissionNeededInfo(readContactsPermission)
+    }
+
+    private fun addScheduleButtonClickListener(rxPermissions: RxPermissions) {
         val requestSmsPermission = rxPermissions.request(Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE)
         scheduleButton.clicks()
                 .bindToLifecycle(this)
@@ -47,18 +87,40 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                         Toast.makeText(this, "not granted", Toast.LENGTH_LONG).show()
                     }
                 }
-        val calendar = Calendar.getInstance()
-        initTimePicker(calendar)
-        initDatePicker(calendar)
-        RxPermissions(this)
-                .request(Manifest.permission.READ_CONTACTS)
-                .subscribe { granted ->
-                    if (granted) {
-                        getContactList()
-                    } else {
-                        Toast.makeText(this, "not granted", Toast.LENGTH_LONG).show()
-                    }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        contactSelector.setOnItemClickListener { parent, view, position, id ->
+            contactSelector.setText("")
+            val selectedContact = contactsAdapter!!.getItem(position)
+            selectedContactsAdapter.items = selectedContactsAdapter.items + selectedContact
+            selectedContactsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun displayContactList(readContactsPermission: Observable<Boolean>) {
+        readContactsPermission
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .filter { it }
+                .map { getContactList() }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    contactsAdapter = ContactsAdapter(this, it)
+                    contactSelector.setAdapter(contactsAdapter)
+                    contactSelector.validator = ContactAdapterValidator(it)
                 }
+                .let { disposable.add(it) }
+    }
+
+    private fun showPermissionNeededInfo(readContactsPermission: Observable<Boolean>) {
+        readContactsPermission
+                .filter { !it }
+                .subscribe {
+                    Toast.makeText(this, "not granted", Toast.LENGTH_LONG).show()
+                }
+                .let { disposable.add(it) }
     }
 
     private fun initDatePicker(calendar: Calendar) {
@@ -117,14 +179,15 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun scheduleSendingSms() {
         val isValidationOk = listOf(
-               // emptyValidator(smsNumberInput, "Number cannot be empty"),
                 emptyValidator(smsTextInput, "Text cannot be empty"),
                 emptyValidator(timeInput, "Time cannot be empty"),
                 emptyValidator(dateInput, "Date cannot be empty"))
                 .all { it }
         if (isValidationOk) {
             val timeInMillis = getTimeInMillis()
-            jobService.createJob(timeInMillis, smsTextInput.text.toString(), "")
+            contactsAdapter?.getItems()?.forEach {
+                jobService.createJob(timeInMillis, smsTextInput.text.toString(), it.phoneNumber)
+            }
             finish()
         }
     }
@@ -151,23 +214,23 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         }.timeInMillis
     }
 
-    private fun getContactList() {
-        contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
+    private fun getContactList(): MutableList<Contact> {
+        return contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
                 .use { contactCursor ->
-                    chipContactList.filterableList = createContactList(contactCursor)
+                    createContactList(contactCursor)
                 }
     }
 
-    private fun createContactList(contactCursor: Cursor): MutableList<ContactChip> {
-        val contacts = mutableListOf<ContactChip>()
+    private fun createContactList(contactCursor: Cursor): MutableList<Contact> {
+        val contacts = mutableListOf<Contact>()
         while (contactCursor.moveToNext()) {
             val id = contactCursor.contactId
             val name = contactCursor.displayName
-            val avatarUri = contactCursor.photoThumbnailUri?.let { Uri.parse(it) }
+            val avatarUri = contactCursor.photoThumbnailUri
             if (contactCursor.hasPhoneNumber) {
                 val numbers = getPhoneNumbers(id)
                 numbers.forEach {
-                    val contactChip = ContactChip(id = id, avatarUri = avatarUri, name = name, phoneNumber = it)
+                    val contactChip = Contact(id = id, avatarUri = avatarUri, label = name, phoneNumber = it)
                     contacts.add(contactChip)
                 }
             }
@@ -185,6 +248,11 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                     }
                 }
         return numbers
+    }
+
+    override fun onDestroy() {
+        disposable.clear()
+        super.onDestroy()
     }
 
     companion object {

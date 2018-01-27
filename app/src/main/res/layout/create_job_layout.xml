@@ -25,21 +25,19 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <com.pchmn.materialchips.ChipsInput
-        android:id="@+id/chipContactList"
+    <AutoCompleteTextView
+        android:id="@+id/contactSelector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/material_margin_medium"
         android:layout_marginRight="@dimen/material_margin_medium"
-        app:hint="Phone number"
-        app:maxRows="5" />
+        android:layout_marginTop="@dimen/material_margin_medium"
+        android:hint="@string/create_job_send_to" />
 
-    <View
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/selectedContactsView"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="@dimen/material_margin_medium"
-        android:layout_marginRight="@dimen/material_margin_medium"
-        android:background="@color/black" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,6 +45,7 @@
         android:layout_marginLeft="@dimen/material_margin_medium"
         android:layout_marginRight="@dimen/material_margin_medium"
         android:layout_marginTop="@dimen/material_margin_medium"
+        android:baselineAligned="false"
         android:orientation="horizontal">
 
         <android.support.design.widget.TextInputLayout
