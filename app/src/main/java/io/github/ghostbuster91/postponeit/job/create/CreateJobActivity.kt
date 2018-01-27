@@ -58,10 +58,6 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         readContactsFromPhone(rxPermissions)
         selectedContactsView.adapter = selectedContactsAdapter
         selectedContactsView.layoutManager = LinearLayoutManager(this, LinearLayout.HORIZONTAL, false)
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onPostCreate(savedInstanceState, persistentState)
         val calendar = Calendar.getInstance()
         initTimePicker(calendar)
         initDatePicker(calendar)
