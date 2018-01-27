@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" />
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/material_margin_medium"
+    android:layout_marginTop="@dimen/material_margin_small"
+    android:background="@drawable/rounded_grey_rectangle"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="4dp"
+    android:paddingLeft="@dimen/material_margin_small"
+    android:paddingRight="@dimen/material_margin_small"
+    android:paddingTop="4dp"
+    android:textStyle="bold" />
