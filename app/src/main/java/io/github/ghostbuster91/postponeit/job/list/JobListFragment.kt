@@ -34,7 +34,7 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
     override val kodein: LazyKodein = LazyKodein(appKodein)
     private val jobService by instance<JobService>()
 
-    private val filter by lazy { arguments.getSerializable(FILTER_KEY) as JobFilter }
+    private val filter by lazy { arguments!!.getSerializable(FILTER_KEY) as JobFilter }
     private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
         basicAdapterWithLayoutAndBinder(jobService.getJobs(filter = filter), R.layout.job_layout, this::bindJob)
     }
@@ -43,16 +43,16 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
         return inflater.inflate(R.layout.job_list, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         jobList.layoutManager = LinearLayoutManager(context)
         val adapter = basicAdapter
         jobList.adapter = adapter
         createDelayedSmsButton.setOnClickListener {
-            CreateJobActivity.start(context)
+            CreateJobActivity.start(context!!)
         }
         if (filter == JobFilter.PENDING) {
-            val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(context, { position -> cancelJob(basicAdapter.items[position].id) }))
+            val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(context!!, { position -> cancelJob(basicAdapter.items[position].id) }))
             itemTouchHelper.attachToRecyclerView(jobList)
         }
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
