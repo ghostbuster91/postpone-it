@@ -3,15 +3,10 @@ package io.github.ghostbuster91.postponeit.job.create
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.support.design.widget.TextInputEditText
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
-import com.elpassion.android.commons.recycler.basic.BasicAdapter
 import com.github.salomonbrys.kodein.LazyKodein
 import com.github.salomonbrys.kodein.LazyKodeinAware
 import com.github.salomonbrys.kodein.android.appKodein
@@ -27,6 +22,10 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.JobService
+import io.github.ghostbuster91.postponeit.job.create.contacts.getContactList
+import io.github.ghostbuster91.postponeit.job.create.validators.EmptyInputValidator
+import io.github.ghostbuster91.postponeit.job.create.validators.OnlyFutureDateValidator
+import io.github.ghostbuster91.postponeit.job.create.validators.SelectedContactAdapterValidator
 import io.github.ghostbuster91.postponeit.utils.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -111,7 +110,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
                 .filter { it }
-                .map { getContactList() }
+                .map { getContactList(contentResolver) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     contactsAdapter = ContactsAdapter(this, it, selectedContactsAdapter::items)
@@ -192,11 +191,12 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun scheduleSendingSms() {
         val isValidationOk = listOf(
-                selectedContactAdapterValidator(contactSelector, selectedContactsAdapter, "Provide at least one contact"),
-                emptyValidator(smsTextInput, "Text cannot be empty"),
-                emptyValidator(timeInput, "Time cannot be empty"),
-                emptyValidator(dateInput, "Date cannot be empty"))
-                .all { it }
+                SelectedContactAdapterValidator(contactSelector, selectedContactsAdapter, "Provide at least one contact"),
+                EmptyInputValidator(smsTextInput, "Text cannot be empty"),
+                EmptyInputValidator(timeInput, "Time cannot be empty"),
+                EmptyInputValidator(dateInput, "Date cannot be empty"),
+                OnlyFutureDateValidator(selectedTime, this))
+                .all { it.validate() }
         if (isValidationOk) {
             val timeInMillis = selectedTime.timeInMillis
             selectedContactsAdapter.items.forEach {
@@ -204,62 +204,6 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
             }
             finish()
         }
-    }
-
-    private fun emptyValidator(input: TextInputEditText, errorMessage: String): Boolean {
-        return if (input.text.isBlank()) {
-            input.error = errorMessage
-            false
-        } else {
-            input.error = null
-            true
-        }
-    }
-
-    private fun selectedContactAdapterValidator(input: EditText, selectedContactsAdapter: BasicAdapter<Contact>, errorMessage: String): Boolean {
-        return if (selectedContactsAdapter.items.isEmpty()) {
-            input.error = errorMessage
-            false
-        } else {
-            input.error = null
-            true
-        }
-    }
-
-    private fun getContactList(): MutableList<Contact> {
-        return contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
-                .use { contactCursor ->
-                    createContactList(contactCursor)
-                }
-    }
-
-    private fun createContactList(contactCursor: Cursor): MutableList<Contact> {
-        val contacts = mutableListOf<Contact>()
-        while (contactCursor.moveToNext()) {
-            val id = contactCursor.contactId
-            val name = contactCursor.displayName
-            val avatarUri = contactCursor.photoThumbnailUri
-            if (contactCursor.hasPhoneNumber) {
-                val numbers = getPhoneNumbers(id)
-                numbers.forEach {
-                    val contactChip = Contact(id = id, avatarUri = avatarUri, label = name, phoneNumber = it)
-                    contacts.add(contactChip)
-                }
-            }
-        }
-        return contacts
-    }
-
-    private fun getPhoneNumbers(contactId: String): MutableList<String> {
-        val numbers = mutableListOf<String>()
-        contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", arrayOf(contactId), null)
-                .use { phoneCursor ->
-                    while (phoneCursor.moveToNext()) {
-                        numbers.add(phoneCursor.phoneNumber)
-                    }
-                }
-        return numbers
     }
 
     override fun onDestroy() {
@@ -273,28 +217,3 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         }
     }
 }
-
-private val Cursor.photoThumbnailUri: String?
-    get() {
-        return getString(getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI))
-    }
-
-private val Cursor.hasPhoneNumber: Boolean
-    get() {
-        return getInt(getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0
-    }
-
-private val Cursor.phoneNumber: String
-    get() {
-        return getString(getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-    }
-
-private val Cursor.displayName: String
-    get() {
-        return getString(getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-    }
-
-private val Cursor.contactId: String
-    get() {
-        return getString(getColumnIndexOrThrow(ContactsContract.Contacts._ID))
-    }

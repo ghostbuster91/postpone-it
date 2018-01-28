@@ -52,6 +52,7 @@ dependencies {
 
     implementation "com.github.salomonbrys.kodein:kodein:$kodeine_version"
     implementation "com.github.salomonbrys.kodein:kodein-android:$kodeine_version"
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
 
     testImplementation 'junit:junit:4.12'
 
