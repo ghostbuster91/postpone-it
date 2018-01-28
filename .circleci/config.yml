@@ -37,7 +37,7 @@ jobs:
          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
      - run:
          name: Decrypt fabric.properties
-         command: openssl aes-256-cbc -d -in app/fabric.properties.enc -out app/fabric.properties -k $FABRIC_ENC_KEY
+         command: openssl aes-256-cbc -md md5 -d -in app/fabric.properties.enc -out app/fabric.properties -k $FABRIC_ENC_KEY
      - run:
          name: Run Tests
          command: ./gradlew assembleQa crashlyticsUploadDistributionQa
