@@ -51,17 +51,21 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         setSupportActionBar(toolbar)
         val rxPermissions = RxPermissions(this)
         addScheduleButtonClickListener(rxPermissions)
-        readContactsFromPhone(rxPermissions)
-        selectedContactsView.adapter = selectedContactsAdapter
-        selectedContactsView.layoutManager = FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP)
         initTimePicker(selectedTime)
         initDatePicker(selectedTime)
+        initContactSelector(rxPermissions)
+    }
+
+    private fun initContactSelector(rxPermissions: RxPermissions) {
+        selectedContactsView.adapter = selectedContactsAdapter
+        selectedContactsView.layoutManager = FlexboxLayoutManager(this, FlexDirection.ROW, FlexWrap.WRAP)
         contactSelector.setOnItemClickListener { parent, view, position, id ->
             contactSelector.setText("")
             val selectedContact = contactsAdapter!!.getItem(position)
             selectedContactsAdapter.items = selectedContactsAdapter.items + selectedContact
             selectedContactsAdapter.notifyDataSetChanged()
         }
+        readContactsFromPhone(rxPermissions)
     }
 
     private fun createSelectedContactsAdapter() =
