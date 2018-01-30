@@ -22,6 +22,8 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.JobService
+import io.github.ghostbuster91.postponeit.job.common.setDateText
+import io.github.ghostbuster91.postponeit.job.common.setTimeText
 import io.github.ghostbuster91.postponeit.job.create.contacts.getContactList
 import io.github.ghostbuster91.postponeit.job.create.validators.EmptyInputValidator
 import io.github.ghostbuster91.postponeit.job.create.validators.OnlyFutureDateValidator
@@ -32,8 +34,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.create_job_layout.*
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
@@ -131,7 +131,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun initDatePicker(calendar: Calendar) {
         with(calendar) {
-            setNewDate(day, month, year)
+            dateInput.setDateText(day, month, year)
             dateInput.setOnClickListener {
                 showDatePicker(year, month, day)
             }
@@ -140,7 +140,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
 
     private fun initTimePicker(calendar: Calendar) {
         with(calendar) {
-            setNewTime(calendar.toDate())
+            timeInput.setTimeText(calendar.toDate())
             timeInput.setOnClickListener {
                 showTimePicker(hour, minute)
             }
@@ -155,7 +155,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                         month = m
                         year = y
                     }
-                    setNewDate(d, m, y)
+                    dateInput.setDateText(d, m, y)
                 },
                 currentYear,
                 currentMonth,
@@ -163,14 +163,10 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         dpd.show(fragmentManager, "Datepickerdialog")
     }
 
-    private fun setNewDate(d: Int, m: Int, y: Int) {
-        dateInput.setText(getString(R.string.create_job_date_format, d.leadingZero(), (m + 1).leadingZero(), y.leadingZero()))
-    }
-
     private fun showTimePicker(currentHour: Int, currentMinute: Int) {
         val dpd = TimePickerDialog.newInstance(
                 { _, h, m, _ ->
-                    setNewTime(
+                    timeInput.setTimeText(
                             selectedTime.apply {
                                 hour = h
                                 minute = m
@@ -181,13 +177,6 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
                 true)
         dpd.show(fragmentManager, "TimepickerDialog")
     }
-
-    private fun setNewTime(time: Date) {
-        val timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, resources.configuration.locale)
-        timeInput.setText(timeFormat.format(time))
-    }
-
-    private fun Int.leadingZero() = String.format("%02d", this)
 
     private fun scheduleSendingSms() {
         val isValidationOk = listOf(

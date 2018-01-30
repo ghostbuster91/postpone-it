@@ -87,3 +87,7 @@ configurations.all {
         force "com.android.support:support-v13:$android_support_version"
     }
 }
+
+androidExtensions {
+    experimental = true
+}

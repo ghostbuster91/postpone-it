@@ -27,6 +27,9 @@
         <activity
             android:name=".job.create.CreateJobActivity"
             android:theme="@style/CreateDelayedJobTheme" />
+        <activity
+            android:name=".job.edit.EditJobActivity"
+            android:theme="@style/CreateDelayedJobTheme" />
 
         <receiver android:name=".RestoreAlarmsOnBootCompletedReceiver">
             <intent-filter>

@@ -22,6 +22,7 @@ import io.github.ghostbuster91.postponeit.job.DelayedJobStatus
 import io.github.ghostbuster91.postponeit.job.JobFilter
 import io.github.ghostbuster91.postponeit.job.JobService
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
+import io.github.ghostbuster91.postponeit.job.edit.EditJobActivity
 import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
 import io.github.ghostbuster91.postponeit.utils.toDate
 import kotlinx.android.synthetic.main.job_layout.view.*
@@ -75,6 +76,9 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
             val toDate = calendar.toDate()
             jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
             jobStatus.text = jobStatsDisplayNameResolver(item)
+            setOnClickListener {
+                EditJobActivity.start(context, item.id)
+            }
         }
     }
 
