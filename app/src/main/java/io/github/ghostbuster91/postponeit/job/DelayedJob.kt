@@ -1,8 +1,10 @@
 package io.github.ghostbuster91.postponeit.job
 
+import io.github.ghostbuster91.postponeit.job.create.Contact
+
 data class DelayedJob(val id: String,
                       val text: String,
-                      val number: String,
+                      val contact: Contact,
                       val timeInMillis: Long,
                       val status: DelayedJobStatus = DelayedJobStatus.Pending,
                       val requiresAcceptance: Boolean)

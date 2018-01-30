@@ -26,10 +26,10 @@ class SendSmsJobExecutor : KodeinBroadcastReceiver() {
     private fun executeDelayedJob(context: Context, delayedJob: DelayedJob) {
         val deliveryIntent = createDeliveryIntent(context, delayedJob)
         val sentIntent = createSentIntent(context, delayedJob)
-        smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, sentIntent, deliveryIntent)
+        smsManager.sendTextMessage(delayedJob.contact.phoneNumber, null, delayedJob.text, sentIntent, deliveryIntent)
         jobService.updateJob(delayedJob.copy(status = DelayedJobStatus.Executed))
         Log.d(SendSmsJobExecutor::class.java.name, "$delayedJob exeuted")
-        notificationService.showNotification("Sms sent to ${delayedJob.number}", delayedJob.text)
+        notificationService.showNotification("Sms sent to ${delayedJob.contact.label}", delayedJob.text)
     }
 
     private fun createSentIntent(context: Context, delayedJob: DelayedJob): PendingIntent {

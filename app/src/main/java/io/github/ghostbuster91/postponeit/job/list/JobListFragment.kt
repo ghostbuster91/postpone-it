@@ -67,7 +67,7 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
 
     private fun bindJob(holder: ViewHolderBinder<DelayedJob>, item: DelayedJob) {
         with(holder.itemView) {
-            targetSmsNumber.text = getString(R.string.job_list_send_to, item.number)
+            targetSmsNumber.text = getString(R.string.job_list_send_to, item.contact.label)
             jobContent.text = getString(R.string.job_list_message, item.text)
             val calendar = Calendar.getInstance().apply { timeInMillis = item.timeInMillis }
             val dateFormat = getDateFormat(context)

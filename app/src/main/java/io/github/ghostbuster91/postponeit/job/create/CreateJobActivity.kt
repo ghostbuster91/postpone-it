@@ -200,7 +200,7 @@ class CreateJobActivity : RxAppCompatActivity(), LazyKodeinAware {
         if (isValidationOk) {
             val timeInMillis = selectedTime.timeInMillis
             selectedContactsAdapter.items.forEach {
-                jobService.createJob(timeInMillis, smsTextInput.text.toString(), it.phoneNumber, requiresAcceptanceView.isChecked)
+                jobService.createJob(timeInMillis, smsTextInput.text.toString(), it, requiresAcceptanceView.isChecked)
             }
             finish()
         }

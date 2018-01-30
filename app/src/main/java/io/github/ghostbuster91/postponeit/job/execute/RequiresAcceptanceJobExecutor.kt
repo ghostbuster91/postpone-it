@@ -17,7 +17,7 @@ class RequiresAcceptanceJobExecutor : KodeinBroadcastReceiver() {
         val delayedJob = jobService.findJob(intent.getStringExtra(KEY))
 
         notificationService.showNotification("Message requires acceptance",
-                "You are about to send ${delayedJob.text} to ${delayedJob.number}",
+                "You are about to send ${delayedJob.text} to ${delayedJob.contact.label}",
                 {
                     addAction(createSendAction(context, delayedJob))
                     setDeleteIntent(createDeleteIntent(context, delayedJob))
