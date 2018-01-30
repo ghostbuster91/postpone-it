@@ -38,5 +38,6 @@
         <receiver android:name=".result.SmsDeliveryResultReceiver" />
         <receiver android:name=".job.execute.DispatchingJobExecutor" />
         <receiver android:name=".job.execute.RequiresAcceptanceJobExecutor" />
+        <receiver android:name=".job.execute.AcceptanceNotGrantedJobExecutor" />
     </application>
 </manifest>
