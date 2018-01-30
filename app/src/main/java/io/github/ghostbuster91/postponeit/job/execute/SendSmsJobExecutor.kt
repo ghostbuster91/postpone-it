@@ -30,17 +30,13 @@ class SendSmsJobExecutor : KodeinBroadcastReceiver() {
 
     private fun createSentIntent(context: Context, delayedJob: DelayedJob): PendingIntent {
         val sentIntent = SmsSendingResultReceiver.createIntent(context, delayedJob.id)
-        return wrapWithPendingIntent(context, sentIntent)
+        return sentIntent.wrapWithPendingIntent(context)
     }
 
     private fun createDeliveryIntent(context: Context, delayedJob: DelayedJob): PendingIntent {
         val deliveredIntent = SmsDeliveryResultReceiver.createIntent(context, delayedJob.id)
-        return wrapWithPendingIntent(context, deliveredIntent)
+        return deliveredIntent.wrapWithPendingIntent(context)
     }
-
-    private fun wrapWithPendingIntent(context: Context, intent: Intent?) =
-            PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
 
     companion object {
         private const val KEY = "SMS_DATA_KEY"
@@ -49,3 +45,6 @@ class SendSmsJobExecutor : KodeinBroadcastReceiver() {
                         .putExtra(KEY, delayedJobId)
     }
 }
+
+fun Intent.wrapWithPendingIntent(context: Context) =
+        PendingIntent.getBroadcast(context, 0, this, PendingIntent.FLAG_UPDATE_CURRENT)
