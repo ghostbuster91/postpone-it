@@ -39,5 +39,6 @@
         <receiver android:name=".job.execute.DispatchingJobExecutor" />
         <receiver android:name=".job.execute.RequiresAcceptanceJobExecutor" />
         <receiver android:name=".job.execute.AcceptanceNotGrantedJobExecutor" />
+        <receiver android:name=".job.execute.DirectEditJobExecutor" />
     </application>
 </manifest>

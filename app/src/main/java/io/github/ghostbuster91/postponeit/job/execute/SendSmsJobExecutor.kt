@@ -3,6 +3,7 @@ package io.github.ghostbuster91.postponeit.job.execute
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.support.v4.app.RemoteInput
 import android.telephony.SmsManager
 import android.util.Log
 import com.github.salomonbrys.kodein.android.KodeinBroadcastReceiver
