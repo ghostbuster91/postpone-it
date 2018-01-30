@@ -4,7 +4,8 @@ data class DelayedJob(val id: String,
                       val text: String,
                       val number: String,
                       val timeInMillis: Long,
-                      val status: DelayedJobStatus = DelayedJobStatus.Pending)
+                      val status: DelayedJobStatus = DelayedJobStatus.Pending,
+                      val requiresAcceptance: Boolean)
 
 sealed class DelayedJobStatus {
     object Pending : DelayedJobStatus()

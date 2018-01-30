@@ -4,7 +4,7 @@ import io.github.ghostbuster91.postponeit.AlarmManagerService
 import java.util.*
 
 interface JobService {
-    fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String)
+    fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String, requiresAcceptance: Boolean)
     fun cancelJob(jobToCancelId: String)
     fun findJob(delayedJobId: String): DelayedJob
     fun updateJob(delayedJob: DelayedJob)
@@ -14,9 +14,9 @@ interface JobService {
 class JobServiceImpl(private val alarmManagerService: AlarmManagerService,
                      private val jobRepository: JobRepository) : JobService {
 
-    override fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String) {
+    override fun createJob(timeInMillis: Long, smsText: String, smsTextNumber: String, requiresAcceptance: Boolean) {
         val id = UUID.randomUUID().toString()
-        val delayedJob = DelayedJob(id = id, text = smsText, number = smsTextNumber, timeInMillis = timeInMillis)
+        val delayedJob = DelayedJob(id = id, text = smsText, number = smsTextNumber, timeInMillis = timeInMillis, requiresAcceptance = requiresAcceptance)
         alarmManagerService.createAlarm(delayedJob)
         jobRepository.addJob(delayedJob)
     }

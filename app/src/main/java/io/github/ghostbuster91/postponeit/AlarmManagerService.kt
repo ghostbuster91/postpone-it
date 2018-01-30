@@ -3,7 +3,7 @@ package io.github.ghostbuster91.postponeit
 import android.app.AlarmManager
 import android.app.PendingIntent
 import io.github.ghostbuster91.postponeit.job.DelayedJob
-import io.github.ghostbuster91.postponeit.job.execute.SendSmsJobExecutor
+import io.github.ghostbuster91.postponeit.job.execute.DispatchingJobExecutor
 
 interface AlarmManagerService {
     fun createAlarm(job: DelayedJob)
@@ -24,7 +24,7 @@ class AlarmManagerServiceImpl(private val context: android.content.Context) : Al
     }
 
     private fun createAlarmIntent(delayedJobId: String): android.app.PendingIntent? {
-        val intent = SendSmsJobExecutor.intent(context, delayedJobId)
+        val intent = DispatchingJobExecutor.intent(context, delayedJobId)
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }

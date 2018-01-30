@@ -20,6 +20,10 @@ class SendSmsJobExecutor : KodeinBroadcastReceiver() {
 
     override fun onBroadcastReceived(context: Context, intent: Intent) {
         val delayedJob = jobService.findJob(intent.getStringExtra(KEY))
+        executeDelayedJob(context, delayedJob)
+    }
+
+    private fun executeDelayedJob(context: Context, delayedJob: DelayedJob) {
         val deliveryIntent = createDeliveryIntent(context, delayedJob)
         val sentIntent = createSentIntent(context, delayedJob)
         smsManager.sendTextMessage(delayedJob.number, null, delayedJob.text, sentIntent, deliveryIntent)
@@ -46,5 +50,3 @@ class SendSmsJobExecutor : KodeinBroadcastReceiver() {
     }
 }
 
-fun Intent.wrapWithPendingIntent(context: Context) =
-        PendingIntent.getBroadcast(context, 0, this, PendingIntent.FLAG_UPDATE_CURRENT)

@@ -31,10 +31,13 @@ class SmsSendingResultReceiver : SmsResultReceiver() {
             notificationService.showNotification(
                     "Sending message failed..",
                     status.errorType.toString(),
-                    NotificationCompat.Action(R.drawable.ic_loop_black_24dp,"Retry", resendIntent.wrapWithPendingIntent(context)))
+                    { addAction(createRetryAction(resendIntent, context)) })
         }
         return status
     }
+
+    private fun createRetryAction(resendIntent: Intent, context: Context) =
+            NotificationCompat.Action(R.drawable.ic_loop_black_24dp, "Retry", resendIntent.wrapWithPendingIntent(context))
 
     companion object {
         fun createIntent(context: Context, jobId: String) =

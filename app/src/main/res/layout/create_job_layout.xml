@@ -96,4 +96,13 @@
             android:hint="@string/create_job_text_hint" />
 
     </android.support.design.widget.TextInputLayout>
+
+    <CheckBox
+        android:text="@string/create_job_requires_acceptance_check_box"
+        android:id="@+id/requiresAcceptanceView"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/material_margin_medium"
+        android:layout_marginStart="@dimen/material_margin_medium"
+        android:layout_marginEnd="@dimen/material_margin_medium"
+        android:layout_height="wrap_content" />
 </LinearLayout>
