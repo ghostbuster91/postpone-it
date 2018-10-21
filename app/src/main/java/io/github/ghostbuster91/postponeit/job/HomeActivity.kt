@@ -20,21 +20,22 @@ import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.edit.EditJobActivity
 import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
 import io.github.ghostbuster91.postponeit.utils.toDate
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.job_layout.view.*
 import kotlinx.android.synthetic.main.job_list.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class HomeActivity : RxAppCompatActivity(), LazyKodeinAware {
+class HomeActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<DelayedJob>> {
     override val kodein: LazyKodein = LazyKodein(appKodein)
     private val appModel by instance<AppModel>()
     private val eventS = PublishRelay.create<AppEvent>()
-
+    override val events: Observable<AppEvent> = eventS.mergeWith(createDelayedSmsButton.clicks().map { AppEvent.CreateJobClicked })
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.job_list)
         createView()
-        bind(appModel, appModel.jobList, eventS.mergeWith(createDelayedSmsButton.clicks().map { AppEvent.CreateJobClicked }), this::render)
+        bind({ appModel.events to appModel.jobList }, this)
     }
 
     private fun createView() {
@@ -43,7 +44,7 @@ class HomeActivity : RxAppCompatActivity(), LazyKodeinAware {
         jobList.addItemDecoration(dividerItemDecoration)
     }
 
-    private fun render(jobs: List<DelayedJob>) {
+    override fun render(jobs: List<DelayedJob>) {
         val adapter = basicAdapterWithLayoutAndBinder(jobs, R.layout.job_layout, this::bindJob)
         jobList.adapter = adapter
         val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(this) { position ->

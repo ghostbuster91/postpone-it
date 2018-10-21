@@ -8,6 +8,7 @@ import io.github.ghostbuster91.postponeit.CurrentActivityProvider
 import io.github.ghostbuster91.postponeit.job.create.CreateJobActivity
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 
 @SuppressLint("CheckResult")
 fun createAppModel(jobList: List<DelayedJob>): AppModel {
@@ -38,18 +39,22 @@ sealed class AppCommand {
 
 @SuppressLint("CheckResult")
 fun <T, S> LifecycleProvider<T>.bind(
-        appModel: AppModel,
-        states: Observable<S>,
-        events: Observable<AppEvent>,
-        render: (S) -> Unit
+        provider: () -> Pair<Consumer<AppEvent>, Observable<S>>,
+        view: ReactView<S>
 ) {
-    states
+    val appModel = provider()
+    appModel.second
             .observeOn(AndroidSchedulers.mainThread())
             .bindToLifecycle(this)
-            .subscribe(render)
-    events
+            .subscribe(view::render)
+    view.events
             .bindToLifecycle(this)
-            .subscribe(appModel.events)
+            .subscribe(appModel.first)
+}
+
+interface ReactView<S> {
+    val events: Observable<AppEvent>
+    fun render(s: S)
 }
 
 enum class Screen {
