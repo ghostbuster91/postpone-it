@@ -1,5 +1,6 @@
 package io.github.ghostbuster91.postponeit.job
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +27,7 @@ import kotlinx.android.synthetic.main.job_list.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class JobListActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<DelayedJob>> {
+class JobListActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<DelayedJob>, AppEvent> {
     override val kodein: LazyKodein = LazyKodein(appKodein)
     private val appModel by instance<AppModel>()
     private val eventS = PublishRelay.create<AppEvent>()
@@ -45,13 +46,16 @@ class JobListActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<D
         jobList.addItemDecoration(dividerItemDecoration)
     }
 
-    override fun render(jobs: List<DelayedJob>) {
-        val adapter = basicAdapterWithLayoutAndBinder(jobs, R.layout.job_layout, this::bindJob)
-        jobList.adapter = adapter
-        val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(this) { position ->
-            eventS.accept(AppEvent.JobCanceled(adapter.items[position].id))
-        })
-        itemTouchHelper.attachToRecyclerView(jobList)
+    @SuppressLint("CheckResult")
+    override fun render(jobsS: Observable<List<DelayedJob>>) {
+        jobsS.subscribe {jobs->
+            val adapter = basicAdapterWithLayoutAndBinder(jobs, R.layout.job_layout, this::bindJob)
+            jobList.adapter = adapter
+            val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(this) { position ->
+                eventS.accept(AppEvent.JobCanceled(adapter.items[position].id))
+            })
+            itemTouchHelper.attachToRecyclerView(jobList)
+        }
     }
 
     private fun bindJob(holder: ViewHolderBinder<DelayedJob>, item: DelayedJob) {

@@ -15,8 +15,10 @@ class ContactAdapterFilter(private val contacts: List<Contact>,
         if (constraint != null) {
             val selectedContacts = selectedContactsFetcher()
             contacts
+                    .asSequence()
                     .filter { it.label.startsWith(constraint.toString(), true) }
                     .filterNot { it in selectedContacts }
+                    .toList()
                     .let {
                         results.count = it.size
                         results.values = it

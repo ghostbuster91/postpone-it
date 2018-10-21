@@ -15,7 +15,6 @@ import com.github.salomonbrys.kodein.android.appKodein
 import com.github.salomonbrys.kodein.instance
 import io.github.ghostbuster91.postponeit.R
 import io.github.ghostbuster91.postponeit.job.JobService
-import io.github.ghostbuster91.postponeit.job.common.setDateText
 import io.github.ghostbuster91.postponeit.job.common.setTimeText
 import io.github.ghostbuster91.postponeit.utils.day
 import io.github.ghostbuster91.postponeit.utils.month
@@ -35,7 +34,7 @@ class EditJobActivity : AppCompatActivity(), LazyKodeinAware {
         smsTextInput.setText(delayedJob.text)
         smsTextInput.disable()
         val calendar = Calendar.getInstance().apply { timeInMillis = delayedJob.timeInMillis }
-        dateInput.setDateText(calendar.day, calendar.month, calendar.year)
+//        dateInput.setDateText(calendar.day, calendar.month, calendar.year)
         timeInput.setTimeText(calendar.toDate())
         contactSelector.disable()
         dateInput.disable()

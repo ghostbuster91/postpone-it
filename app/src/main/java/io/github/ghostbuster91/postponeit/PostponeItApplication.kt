@@ -8,6 +8,8 @@ import com.crashlytics.android.core.CrashlyticsCore
 import com.github.salomonbrys.kodein.*
 import com.github.salomonbrys.kodein.android.androidModule
 import com.google.gson.Gson
+import com.jakewharton.rxrelay2.PublishRelay
+import com.jakewharton.threetenabp.AndroidThreeTen
 import io.fabric.sdk.android.Fabric
 import io.github.ghostbuster91.postponeit.job.*
 import io.github.ghostbuster91.postponeit.job.execute.NotificationService
@@ -27,20 +29,25 @@ class PostponeItApplication : Application(), KodeinAware {
         bind<JobService>() with singleton {
             JobServiceImpl(alarmManagerService = instance(), jobRepository = instance())
         }
+        bind<PublishRelay<PermissionEvent>>() with singleton {
+            PublishRelay.create<PermissionEvent>()
+        }
         bind<AppModel>() with singleton {
-            createAppModel(emptyList())
+            createAppModel(emptyList(), instance<PublishRelay<PermissionEvent>>())
         }
     }
 
     private val appModel = kodein.instance<AppModel>()
+    private val permissionConsumer = kodein.instance<PublishRelay<PermissionEvent>>()
 
     override fun onCreate() {
         super.onCreate()
+        AndroidThreeTen.init(this)
         val crashlyticsCore = CrashlyticsCore.Builder()
                 .disabled(BuildConfig.DEBUG)
                 .build()
         registerActivityLifecycleCallbacks(CurrentActivityProvider)
-        commandExecutor(appModel.commands)
+        commandExecutor(appModel.commands, permissionConsumer)
         Fabric.with(this, Crashlytics.Builder().core(crashlyticsCore).build())
     }
 }

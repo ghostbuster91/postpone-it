@@ -1,14 +1,16 @@
 package io.github.ghostbuster91.postponeit.job.create.contacts
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.provider.ContactsContract
 import io.github.ghostbuster91.postponeit.job.create.Contact
 
+@SuppressLint("Recycle")
 fun getContactList(contentResolver: ContentResolver): MutableList<Contact> {
-    return contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
-            .let { ContactCursorAdapter(it) }
-            .use { cursor ->
-                createContactList(cursor, contentResolver)
+    val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
+    return ContactCursorAdapter(cursor)
+            .use {
+                createContactList(it, contentResolver)
             }
 }
 
