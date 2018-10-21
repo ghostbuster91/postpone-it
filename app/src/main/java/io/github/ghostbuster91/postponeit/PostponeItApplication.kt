@@ -40,7 +40,7 @@ class PostponeItApplication : Application(), KodeinAware {
                 .disabled(BuildConfig.DEBUG)
                 .build()
         registerActivityLifecycleCallbacks(CurrentActivityProvider)
-        navigator(appModel.commands)
+        commandExecutor(appModel.commands)
         Fabric.with(this, Crashlytics.Builder().core(crashlyticsCore).build())
     }
 }

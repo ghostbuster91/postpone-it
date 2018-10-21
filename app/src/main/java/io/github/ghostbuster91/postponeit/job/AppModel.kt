@@ -63,10 +63,9 @@ enum class Screen {
 }
 
 @SuppressLint("CheckResult")
-fun navigator(navigationCommands: Observable<AppCommand>) {
+private fun navigator(navigationCommands: Observable<AppCommand.Navigate>) {
     navigationCommands
             .observeOn(AndroidSchedulers.mainThread())
-            .ofType(AppCommand.Navigate::class.java)
             .subscribe {
                 CurrentActivityProvider.currentActivity?.let { context ->
                     when (it.target) {
@@ -75,4 +74,8 @@ fun navigator(navigationCommands: Observable<AppCommand>) {
                     }
                 }
             }
+}
+
+fun commandExecutor(appCommands: Observable<AppCommand>) {
+    navigator(appCommands.ofType(AppCommand.Navigate::class.java))
 }
