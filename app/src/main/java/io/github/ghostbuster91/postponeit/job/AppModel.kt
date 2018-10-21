@@ -17,7 +17,6 @@ fun createAppModel(jobList: List<DelayedJob>): AppModel {
     events.filter { it is AppEvent.CreateJobClicked }
             .map { AppCommand.Navigate(Screen.CREATE_NEW_JOB) }
             .ofType(AppCommand::class.java)
-            .map { it }
             .subscribe(commands)
     return AppModel(Observable.just(jobList), Observable.never(), events, commands)
 }
