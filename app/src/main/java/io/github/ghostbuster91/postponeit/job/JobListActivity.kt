@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.job_list.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class HomeActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<DelayedJob>> {
+class JobListActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<DelayedJob>> {
     override val kodein: LazyKodein = LazyKodein(appKodein)
     private val appModel by instance<AppModel>()
     private val eventS = PublishRelay.create<AppEvent>()
@@ -81,6 +81,6 @@ class HomeActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<Dela
     }
 
     companion object {
-        fun intent(context: Context) = Intent(context, HomeActivity::class.java)
+        fun intent(context: Context) = Intent(context, JobListActivity::class.java)
     }
 }

@@ -8,7 +8,7 @@ import android.content.Context
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import io.github.ghostbuster91.postponeit.R
-import io.github.ghostbuster91.postponeit.job.HomeActivity
+import io.github.ghostbuster91.postponeit.job.JobListActivity
 
 interface NotificationService {
     fun showNotification(title: String, content: String, notificationCustomizer: NotificationCompat.Builder.() -> NotificationCompat.Builder = { this })
@@ -17,7 +17,7 @@ interface NotificationService {
 class NotificationServiceImpl(private val context: Context) : NotificationService {
 
     override fun showNotification(title: String, content: String, notificationCustomizer: NotificationCompat.Builder.() -> NotificationCompat.Builder) {
-        val notificationClickIntent = PendingIntent.getActivity(context, 0, HomeActivity.intent(context), 0)
+        val notificationClickIntent = PendingIntent.getActivity(context, 0, JobListActivity.intent(context), 0)
         val notification = createNotification(context, notificationClickIntent, title, content, notificationCustomizer)
         val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
