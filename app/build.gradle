@@ -1,6 +1,6 @@
 buildscript {
-    ext.android_support_version = '27.0.2'
-    ext.android_commons_version = '0.0.21'
+    ext.android_support_version = '27.1.1'
+    ext.android_commons_version = '0.0.23'
     ext.rx_lifecycle_version = '2.2.0'
     ext.kodeine_version = '4.1.0'
     repositories {
@@ -54,9 +54,9 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$android_support_version"
     implementation "com.android.support:design:$android_support_version"
 
-    implementation "com.elpassion.android.commons:recycler:$android_commons_version"
-    implementation "com.elpassion.android.commons:shared-preferences:$android_commons_version"
-    implementation "com.elpassion.android.commons:shared-preferences-gson-converter-adapter:$android_commons_version"
+    implementation "com.github.elpassion.android-commons:recycler:$android_commons_version"
+    implementation "com.github.elpassion.android-commons:shared-preferences:$android_commons_version"
+    implementation "com.github.elpassion.android-commons:shared-preferences-gson-converter-adapter:$android_commons_version"
 
     implementation 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar'
