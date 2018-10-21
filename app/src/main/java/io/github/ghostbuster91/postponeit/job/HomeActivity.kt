@@ -39,7 +39,7 @@ class HomeActivity : AppCompatActivity() {
                 title = item.name
                 supportActionBar?.title = item.name
                 drawerLayout.closeDrawer(leftMenuList)
-                leftMenuList.adapter.notifyDataSetChanged()
+                leftMenuList.adapter?.notifyDataSetChanged()
             }
             textView.isSelected = selectedItem == item
         })

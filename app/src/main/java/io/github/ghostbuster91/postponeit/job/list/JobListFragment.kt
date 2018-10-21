@@ -63,7 +63,7 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
     override fun onResume() {
         super.onResume()
         basicAdapter.items = jobService.getJobs(filter = filter)
-        jobList.adapter.notifyDataSetChanged()
+        jobList.adapter?.notifyDataSetChanged()
     }
 
     private fun bindJob(holder: ViewHolderBinder<DelayedJob>, item: DelayedJob) {
@@ -96,7 +96,7 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
     private fun cancelJob(jobToCancelId: String) {
         jobService.cancelJob(jobToCancelId)
         basicAdapter.items = jobService.getJobs(filter = filter)
-        jobList.adapter.notifyDataSetChanged()
+        jobList.adapter?.notifyDataSetChanged()
     }
 
     companion object {
