@@ -36,9 +36,7 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
     private val jobService by instance<JobService>()
 
     private val filter by lazy { arguments!!.getSerializable(FILTER_KEY) as JobFilter }
-    private val basicAdapter: BasicAdapter<DelayedJob> by lazy {
-        basicAdapterWithLayoutAndBinder(jobService.getJobs(filter = filter), R.layout.job_layout, this::bindJob)
-    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.job_list, container, false)
@@ -46,58 +44,14 @@ class JobListFragment : RxFragment(), LazyKodeinAware {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        jobList.layoutManager = LinearLayoutManager(context)
-        val adapter = basicAdapter
-        jobList.adapter = adapter
-        createDelayedSmsButton.setOnClickListener {
-            CreateJobActivity.start(context!!)
-        }
-        if (filter == JobFilter.PENDING) {
-            val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(context!!, { position -> cancelJob(basicAdapter.items[position].id) }))
-            itemTouchHelper.attachToRecyclerView(jobList)
-        }
-        val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-        jobList.addItemDecoration(dividerItemDecoration)
+
     }
 
     override fun onResume() {
         super.onResume()
-        basicAdapter.items = jobService.getJobs(filter = filter)
         jobList.adapter?.notifyDataSetChanged()
     }
 
-    private fun bindJob(holder: ViewHolderBinder<DelayedJob>, item: DelayedJob) {
-        with(holder.itemView) {
-            targetSmsNumber.text = getString(R.string.job_list_send_to, item.contact.label)
-            jobContent.text = getString(R.string.job_list_message, item.text)
-            val calendar = Calendar.getInstance().apply { timeInMillis = item.timeInMillis }
-            val dateFormat = getDateFormat(context)
-            val timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT, resources.configuration.locale)
-            val toDate = calendar.toDate()
-            jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
-            jobStatus.text = jobStatsDisplayNameResolver(item)
-            setOnClickListener {
-                EditJobActivity.start(context, item.id)
-            }
-        }
-    }
-
-    private fun jobStatsDisplayNameResolver(item: DelayedJob): CharSequence? {
-        return when (item.status) {
-            DelayedJobStatus.Pending -> getString(R.string.common_job_status_pending)
-            DelayedJobStatus.Executed -> getString(R.string.common_job_status_executed)
-            DelayedJobStatus.Canceled -> getString(R.string.common_job_status_canceled)
-            is DelayedJobStatus.Error -> getString(R.string.common_job_status_error)
-            DelayedJobStatus.Sent -> getString(R.string.common_job_status_sent)
-            DelayedJobStatus.Delivered -> getString(R.string.common_job_status_delivered)
-        }
-    }
-
-    private fun cancelJob(jobToCancelId: String) {
-        jobService.cancelJob(jobToCancelId)
-        basicAdapter.items = jobService.getJobs(filter = filter)
-        jobList.adapter?.notifyDataSetChanged()
-    }
 
     companion object {
         private const val FILTER_KEY = "filter"

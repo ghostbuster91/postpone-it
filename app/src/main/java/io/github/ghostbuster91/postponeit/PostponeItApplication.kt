@@ -27,13 +27,20 @@ class PostponeItApplication : Application(), KodeinAware {
         bind<JobService>() with singleton {
             JobServiceImpl(alarmManagerService = instance(), jobRepository = instance())
         }
+        bind<AppModel>() with singleton {
+            createAppModel(emptyList())
+        }
     }
+
+    private val appModel = kodein.instance<AppModel>()
 
     override fun onCreate() {
         super.onCreate()
         val crashlyticsCore = CrashlyticsCore.Builder()
                 .disabled(BuildConfig.DEBUG)
                 .build()
+        registerActivityLifecycleCallbacks(CurrentActivityProvider)
+        navigator(appModel.commands)
         Fabric.with(this, Crashlytics.Builder().core(crashlyticsCore).build())
     }
 }

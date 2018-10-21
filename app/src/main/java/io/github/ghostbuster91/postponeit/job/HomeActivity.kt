@@ -3,68 +3,80 @@ package io.github.ghostbuster91.postponeit.job
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.view.MenuItem
-import android.widget.TextView
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.format.DateFormat
 import com.elpassion.android.commons.recycler.adapters.basicAdapterWithLayoutAndBinder
+import com.elpassion.android.commons.recycler.basic.ViewHolderBinder
+import com.github.salomonbrys.kodein.LazyKodein
+import com.github.salomonbrys.kodein.LazyKodeinAware
+import com.github.salomonbrys.kodein.android.appKodein
+import com.github.salomonbrys.kodein.instance
+import com.jakewharton.rxbinding2.view.clicks
+import com.jakewharton.rxrelay2.PublishRelay
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.github.ghostbuster91.postponeit.R
-import io.github.ghostbuster91.postponeit.job.list.JobListFragment
-import kotlinx.android.synthetic.main.home_activity.*
+import io.github.ghostbuster91.postponeit.job.edit.EditJobActivity
+import io.github.ghostbuster91.postponeit.utils.SwipingItemTouchHelper
+import io.github.ghostbuster91.postponeit.utils.toDate
+import kotlinx.android.synthetic.main.job_layout.view.*
+import kotlinx.android.synthetic.main.job_list.*
+import java.text.SimpleDateFormat
+import java.util.*
 
-class HomeActivity : AppCompatActivity() {
-
-    private val mDrawerToggle by lazy {
-        object : ActionBarDrawerToggle(
-                this,
-                drawerLayout,
-                R.string.home_drawer_open,
-                R.string.home_drawer_close
-        ) {}
-    }
+class HomeActivity : RxAppCompatActivity(), LazyKodeinAware {
+    override val kodein: LazyKodein = LazyKodein(appKodein)
+    private val appModel by instance<AppModel>()
+    private val eventS = PublishRelay.create<AppEvent>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.home_activity)
-        showFragment(JobFilter.PENDING)
-        leftMenuList.layoutManager = LinearLayoutManager(this)
-        var selectedItem: JobFilter? = JobFilter.PENDING
-        leftMenuList.adapter = basicAdapterWithLayoutAndBinder(listOf(JobFilter.PENDING, JobFilter.ALL), R.layout.left_menu_item, { holder, item ->
-            val textView = holder.itemView as TextView
-            textView.text = item.name
-            textView.setOnClickListener {
-                selectedItem = item
-                showFragment(item)
-                title = item.name
-                supportActionBar?.title = item.name
-                drawerLayout.closeDrawer(leftMenuList)
-                leftMenuList.adapter?.notifyDataSetChanged()
-            }
-            textView.isSelected = selectedItem == item
+        setContentView(R.layout.job_list)
+        createView()
+        bind(appModel, appModel.jobList, eventS.mergeWith(createDelayedSmsButton.clicks().map { AppEvent.CreateJobClicked }), this::render)
+    }
+
+    private fun createView() {
+        jobList.layoutManager = LinearLayoutManager(this)
+        val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
+        jobList.addItemDecoration(dividerItemDecoration)
+    }
+
+    private fun render(jobs: List<DelayedJob>) {
+        val adapter = basicAdapterWithLayoutAndBinder(jobs, R.layout.job_layout, this::bindJob)
+        jobList.adapter = adapter
+        val itemTouchHelper = ItemTouchHelper(SwipingItemTouchHelper(this) { position ->
+            eventS.accept(AppEvent.JobCanceled(adapter.items[position].id))
         })
-        drawerLayout.addDrawerListener(mDrawerToggle)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
+        itemTouchHelper.attachToRecyclerView(jobList)
     }
 
-    private fun showFragment(jobFilter: JobFilter) {
-        val fragment = JobListFragment.newInstance(jobFilter)
-        val fragmentManager = supportFragmentManager
-        fragmentManager.beginTransaction()
-                .replace(R.id.contentFrame, fragment)
-                .commit()
+    private fun bindJob(holder: ViewHolderBinder<DelayedJob>, item: DelayedJob) {
+        with(holder.itemView) {
+            targetSmsNumber.text = getString(R.string.job_list_send_to, item.contact.label)
+            jobContent.text = getString(R.string.job_list_message, item.text)
+            val calendar = Calendar.getInstance().apply { timeInMillis = item.timeInMillis }
+            val dateFormat = DateFormat.getDateFormat(context)
+            val timeFormat = SimpleDateFormat.getTimeInstance(java.text.DateFormat.SHORT, resources.configuration.locale)
+            val toDate = calendar.toDate()
+            jobDate.text = getString(R.string.job_list_date_time, dateFormat.format(toDate), timeFormat.format(toDate))
+            jobStatus.text = jobStatsDisplayNameResolver(item)
+            setOnClickListener {
+                EditJobActivity.start(context, item.id)
+            }
+        }
     }
 
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        mDrawerToggle.syncState()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (mDrawerToggle.onOptionsItemSelected(item)) {
-            true
-        } else super.onOptionsItemSelected(item)
+    private fun jobStatsDisplayNameResolver(item: DelayedJob): CharSequence? {
+        return when (item.status) {
+            DelayedJobStatus.Pending -> getString(R.string.common_job_status_pending)
+            DelayedJobStatus.Executed -> getString(R.string.common_job_status_executed)
+            DelayedJobStatus.Canceled -> getString(R.string.common_job_status_canceled)
+            is DelayedJobStatus.Error -> getString(R.string.common_job_status_error)
+            DelayedJobStatus.Sent -> getString(R.string.common_job_status_sent)
+            DelayedJobStatus.Delivered -> getString(R.string.common_job_status_delivered)
+        }
     }
 
     companion object {
