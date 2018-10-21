@@ -30,7 +30,8 @@ class JobListActivity : RxAppCompatActivity(), LazyKodeinAware, ReactView<List<D
     override val kodein: LazyKodein = LazyKodein(appKodein)
     private val appModel by instance<AppModel>()
     private val eventS = PublishRelay.create<AppEvent>()
-    override val events: Observable<AppEvent> = eventS.mergeWith(createDelayedSmsButton.clicks().map { AppEvent.CreateJobClicked })
+    override val events: Observable<AppEvent> by lazy { eventS.mergeWith(createDelayedSmsButton.clicks().map { AppEvent.CreateJobClicked }) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.job_list)
