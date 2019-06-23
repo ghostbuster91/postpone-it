@@ -1,7 +1,7 @@
 package io.github.ghostbuster91.postponeit.job.common
 
 import android.app.Activity
-import android.support.design.widget.TextInputEditText
+import com.google.android.material.textfield.TextInputEditText
 import io.github.ghostbuster91.postponeit.R
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalTime

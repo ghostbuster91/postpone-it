@@ -3,7 +3,7 @@ package io.github.ghostbuster91.postponeit.job.execute
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import com.github.salomonbrys.kodein.android.KodeinBroadcastReceiver
 import com.github.salomonbrys.kodein.instance
 import io.github.ghostbuster91.postponeit.R

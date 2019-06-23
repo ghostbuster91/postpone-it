@@ -4,7 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.app.DialogFragment
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import io.github.ghostbuster91.postponeit.job.create.Validator
 import org.threeten.bp.Instant
 import java.util.*

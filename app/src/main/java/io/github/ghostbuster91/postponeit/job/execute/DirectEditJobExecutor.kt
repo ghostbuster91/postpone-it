@@ -2,7 +2,7 @@ package io.github.ghostbuster91.postponeit.job.execute
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.RemoteInput
+import androidx.core.app.RemoteInput
 import com.github.salomonbrys.kodein.android.KodeinBroadcastReceiver
 import com.github.salomonbrys.kodein.instance
 import io.github.ghostbuster91.postponeit.job.JobService

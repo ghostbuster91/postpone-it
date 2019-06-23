@@ -3,7 +3,7 @@ package io.github.ghostbuster91.postponeit.result
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import android.telephony.SmsManager
 import com.github.salomonbrys.kodein.instance
 import io.github.ghostbuster91.postponeit.R
