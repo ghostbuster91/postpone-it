@@ -21,9 +21,9 @@ class ContactsAdapter(context: Context, list: List<Contact>, selectedContactFetc
         }
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view = convertView ?: View.inflate(context, R.layout.create_job_suggestion_contact_item, null)
-        val contact = getItem(position)
+        val contact = getItem(position)!!
         return view.apply {
             if (contact.avatarUri != null) {
                 contactAvatar.setImageURI(Uri.parse(contact.avatarUri))

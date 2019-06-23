@@ -7,7 +7,7 @@ import io.github.ghostbuster91.postponeit.job.create.Contact
 
 @SuppressLint("Recycle")
 fun getContactList(contentResolver: ContentResolver): MutableList<Contact> {
-    val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
+    val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)!!
     return ContactCursorAdapter(cursor)
             .use {
                 createContactList(it, contentResolver)
@@ -33,12 +33,12 @@ private fun createContactList(contactCursor: ContactCursorAdapter, contentResolv
 
 private fun getPhoneNumbers(contactId: String, contentResolver: ContentResolver): MutableList<String> {
     val numbers = mutableListOf<String>()
-    contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", arrayOf(contactId), null)
-            .let { PhoneCursorAdapter(it) }
-            .use { cursor ->
-                while (cursor.moveToNext()) {
-                    numbers.add(cursor.phoneNumber)
+    val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", arrayOf(contactId), null)!!
+    PhoneCursorAdapter(cursor)
+            .use { pca: PhoneCursorAdapter ->
+                while (pca.moveToNext()) {
+                    numbers.add(pca.phoneNumber)
                 }
             }
     return numbers

@@ -12,10 +12,10 @@ class DirectEditJobExecutor : KodeinBroadcastReceiver() {
     private val jobService by instance<JobService>()
 
     override fun onBroadcastReceived(context: Context, intent: Intent) {
-        val delayedJobId = intent.getStringExtra(DirectEditJobExecutor.KEY)
+        val delayedJobId = intent.getStringExtra(KEY)!!
         val delayedJob = jobService.findJob(delayedJobId)
         val remoteInput = RemoteInput.getResultsFromIntent(intent)
-        val newMessage = remoteInput.getString(REMOTE_INPUT_KEY)
+        val newMessage = remoteInput.getString(REMOTE_INPUT_KEY)!!
         jobService.updateJob(delayedJob.copy(text = newMessage))
         context.sendBroadcast(SendSmsJobExecutor.intent(context, delayedJobId))
     }
